@@ -24,28 +24,26 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
-    MoreHorizontal,
-    User,
     MapPin,
-    Calendar,
+    MoreHorizontal,
+    User
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 /* API */
 import {
-    getCareReceivers,
     deleteCareReceiver,
+    getCareReceivers,
 } from "../api/care-receiver.api";
 
 /* Types */
 import { CareReceiver } from "../types/care-receiver.type";
 
 /* UI Components */
-import { SearchFilter } from "@/components/shared/filter/search-filter.component";
 import { DeleteConfirmDialog } from "@/components/shared/dialogs/delete-confirm-dialogue.component";
-import { EditCareReceiverSheet } from  "../components/edit-care-receiver-sheet";
+import { SearchFilter } from "@/components/shared/filter/search-filter.component";
+import { EditCareReceiverSheet } from "../components/edit-care-receiver-sheet";
 
 export function CareReceiverList() {
     const queryClient = useQueryClient();
@@ -57,7 +55,7 @@ export function CareReceiverList() {
     const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
     const [search, setSearch] = React.useState("");
 
-  /* ---------------- FETCH ---------------- */
+    /* ---------------- FETCH ---------------- */
     const {
         data: receivers = [],
         isLoading,
@@ -67,7 +65,7 @@ export function CareReceiverList() {
         queryFn: getCareReceivers,
     });
 
-  /* ---------------- DELETE ---------------- */
+    /* ---------------- DELETE ---------------- */
     const deleteMutation = useMutation({
         mutationFn: deleteCareReceiver,
 
@@ -75,12 +73,12 @@ export function CareReceiverList() {
             await queryClient.cancelQueries({ queryKey: ["care-receivers"] });
 
             const previous = queryClient.getQueryData<CareReceiver[]>([
-            "care-receivers",
+                "care-receivers",
             ]);
 
             queryClient.setQueryData<CareReceiver[]>(
-            ["care-receivers"],
-            (old = []) => old.filter((r) => r.id !== id)
+                ["care-receivers"],
+                (old = []) => old.filter((r) => r.id !== id)
             );
 
             return { previous };
@@ -101,20 +99,20 @@ export function CareReceiverList() {
         },
     });
 
-  /* ---------------- SEARCH ---------------- */
+    /* ---------------- SEARCH ---------------- */
     const filteredReceivers = React.useMemo(() => {
         const term = search.trim().toLowerCase();
 
         if (!term) return receivers;
 
         return receivers.filter((r) =>
-            `${r.name} ${r.city} ${r.contact}`
-            .toLowerCase()
-            .includes(term)
+            `${r.name} ${r.city} ${r.phone}`
+                .toLowerCase()
+                .includes(term)
         );
     }, [receivers, search]);
 
-  /* ---------------- HANDLERS ---------------- */
+    /* ---------------- HANDLERS ---------------- */
     const handleCloseEdit = () => {
         setIsEditOpen(false);
         setSelectedReceiver(null);
@@ -125,11 +123,11 @@ export function CareReceiverList() {
         setSelectedReceiver(null);
     };
 
-  /* ---------------- STATES ---------------- */
+    /* ---------------- STATES ---------------- */
     if (isLoading) {
         return (
             <div className="p-6 text-muted-foreground">
-            Loading care receivers...
+                Loading care receivers...
             </div>
         );
     }
@@ -137,7 +135,7 @@ export function CareReceiverList() {
     if (isError) {
         return (
             <div className="p-6 text-red-500">
-            Failed to load care receivers
+                Failed to load care receivers
             </div>
         );
     }
@@ -154,139 +152,125 @@ export function CareReceiverList() {
 
             <div className="bg-white dark:bg-slate-950 rounded-xl border shadow-sm overflow-hidden">
 
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Receiver</TableHead>
-                        <TableHead>DOB</TableHead>
-                        <TableHead>Dependency</TableHead>
-                        <TableHead>Location</TableHead>
-                        <TableHead>Medical</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Receiver Name</TableHead>
+                            <TableHead>Gender</TableHead>
+                            <TableHead>DOB</TableHead>
+                            <TableHead>Location</TableHead>
+                            <TableHead>Medical</TableHead>
+                            {/* <TableHead>Status</TableHead> */}
+                            <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
 
-                <TableBody>
-                {filteredReceivers.map((r) => (
-                    <TableRow key={r.id}>
+                    <TableBody>
+                        {filteredReceivers.map((r) => (
+                            <TableRow key={r.id}>
 
-                    {/* NAME */}
-                    <TableCell>
-                        <div className="flex flex-col">
-                        <span className="font-semibold text-xs uppercase tracking-wider flex items-center gap-2">
-                            <User className="h-3 w-3" />
-                            {r.name}
-                        </span>
+                                {/* NAME */}
+                                <TableCell>
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold text-xs uppercase tracking-wider flex items-center gap-2">
+                                            <User className="h-3 w-3" />
+                                            {r.name}
+                                        </span>
 
-                        <span className="text-xs text-muted-foreground mt-1">
-                            {r.contact}
-                        </span>
-                        </div>
-                    </TableCell>
+                                        <span className="text-xs text-muted-foreground mt-1">
+                                            {r.phone}
+                                        </span>
+                                    </div>
+                                </TableCell>
 
-                    {/* DOB */}
-                    <TableCell className="text-sm flex items-center gap-2">
-                        <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                        {r.dob}
-                    </TableCell>
+                                 <TableCell className="text-sm items-center gap-2">
+                                    {r.gender}
+                                </TableCell>
 
-                    {/* DEPENDENCY */}
-                    <TableCell>
-                        <Badge
-                        className={cn(
-                            r.dependencyLevel === "HIGH"
-                            ? "bg-red-100 text-red-700"
-                            : r.dependencyLevel === "MEDIUM"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-green-100 text-green-700"
-                        )}
-                        >
-                        {r.dependencyLevel}
-                        </Badge>
-                    </TableCell>
+                                {/* DOB */}
+                                <TableCell className="text-sm items-center gap-2">
+                                    {r.dateOfBirth}
+                                </TableCell>
+                                <TableCell className="flex  "> 
+                                    <MapPin className="h-3 w-3 text-muted-foreground mr-1" />
+                                    {r.city ?? "-"}
+                                </TableCell>
 
-                    {/* LOCATION */}
-                    <TableCell className="flex items-center gap-1 text-sm">
-                        <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                        {r.city ?? "-"}
-                    </TableCell>
+                                {/* MEDICAL */}
+                                <TableCell>
+                                    <div className="flex flex-wrap gap-1">
+                                        {(r.medicalCondition?.split(",") ?? []).map((m) => (
+                                            <Badge key={m} variant="secondary">
+                                                {m}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </TableCell>
 
-                    {/* MEDICAL */}
-                    <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                        {(r.medicalConditions ?? []).map((m) => (
-                            <Badge key={m} variant="secondary">
-                            {m}
-                            </Badge>
+                                {/* STATUS */}
+                                {/* <TableCell>
+                                    <Badge
+                                        className={cn(
+                                            r.status === "ACTIVE"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-red-100 text-red-700"
+                                        )}
+                                    >
+                                        {r.status}
+                                    </Badge>
+                                </TableCell> */}
+
+                                {/* ACTIONS */}
+                                <TableCell className="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem>
+                                                View Profile
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem
+                                                onClick={() => {
+                                                    setSelectedReceiver(r);
+                                                    setIsEditOpen(true);
+                                                }}
+                                            >
+                                                Edit
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem
+                                                className="text-red-600 font-medium"
+                                                onClick={() => {
+                                                    setSelectedReceiver(r);
+                                                    setIsDeleteOpen(true);
+                                                }}
+                                            >
+                                                Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+
+                            </TableRow>
                         ))}
-                        </div>
-                    </TableCell>
 
-                    {/* STATUS */}
-                    <TableCell>
-                        <Badge
-                        className={cn(
-                            r.status === "ACTIVE"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                        {filteredReceivers.length === 0 && (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={7}
+                                    className="text-center h-24 text-muted-foreground"
+                                >
+                                    No care receivers found.
+                                </TableCell>
+                            </TableRow>
                         )}
-                        >
-                        {r.status}
-                        </Badge>
-                    </TableCell>
-
-                    {/* ACTIONS */}
-                    <TableCell className="text-right">
-                        <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                                View Profile
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedReceiver(r);
-                                    setIsEditOpen(true);
-                                }}
-                            >
-                                Edit
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                                className="text-red-600 font-medium"
-                                onClick={() => {
-                                    setSelectedReceiver(r);
-                                    setIsDeleteOpen(true);
-                                }}
-                            >
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                        </DropdownMenu>
-                    </TableCell>
-
-                    </TableRow>
-                ))}
-
-                {filteredReceivers.length === 0 && (
-                    <TableRow>
-                    <TableCell
-                        colSpan={7}
-                        className="text-center h-24 text-muted-foreground"
-                    >
-                        No care receivers found.
-                    </TableCell>
-                    </TableRow>
-                )}
-                </TableBody>
-            </Table>
+                    </TableBody>
+                </Table>
             </div>
 
             {/* EDIT */}

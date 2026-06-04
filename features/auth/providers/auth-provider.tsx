@@ -36,12 +36,13 @@ export function AuthProvider({
 }: AuthProviderProps) {
     const hydrate = useAuthStore((s) => s.hydrate);
     const isAuthChecked = useAuthStore(selectIsAuthChecked);
-
+    
     useEffect(() => {
         hydrate();
     }, [hydrate]);
-
+    
     // block UI until auth state is resolved
+    console.log("Adsf",isAuthChecked)
     if (!isAuthChecked) {
         return (
             <>

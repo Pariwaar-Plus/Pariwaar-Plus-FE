@@ -1,6 +1,6 @@
 // app/layout.tsx
 import "@/app/globals.css";
-import { Geist } from "next/font/google";
+import { Geist,DM_Sans,Playfair_Display } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { QueryProvider } from "@/providers/query-provider";
@@ -15,6 +15,17 @@ import { AuthGuard } from "@/features/auth/guards/auth-guard";
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
+});
+
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
 });
 
 // ─────────────────────────────────────────────────────
@@ -41,12 +52,12 @@ export default function RootLayout({
         suppressHydrationWarning
         className={cn("font-sans", geist.variable)}
       >
-        <body className={geist.variable}>
+        <body className={`${dmSans.variable} ${playfair.variable} ${geist.variable} `}>
           <QueryProvider>
             <ThemeProvider
                 attribute="class"
-                defaultTheme="system"
-                enableSystem
+                defaultTheme="light"
+                enableSystem ={false}
             >
               {children}
               <Toaster position="top-right" richColors />

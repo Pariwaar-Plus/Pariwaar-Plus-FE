@@ -5,19 +5,18 @@ let careReceivers: CareReceiver[] = [
     {
         id: "r1",
         name: "Hari Sharma",
-        dob: "1948-03-12",
+        dateOfBirth: "1948-03-12",
         gender: "MALE",
 
-        address: "Kathmandu-10",
         city: "Kathmandu",
-        googleMapsUrl: "https://maps.google.com/example",
-        contact: "9800000000",
+        // googleMapsUrl: "https://maps.google.com/example",
+        phone: "9800000000",
 
-        medicalConditions: ["Diabetes", "Hypertension"],
-        dependencyLevel: "HIGH",
+        medicalCondition: "Diabetes, Hypertension",
+        // dependencyLevel: "HIGH",
 
         clientId: "c1",
-        assignedAgentId: "1",
+        // assignedAgentId: "1",
 
         status: "ACTIVE",
 

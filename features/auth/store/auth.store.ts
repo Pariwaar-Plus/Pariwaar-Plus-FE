@@ -50,6 +50,7 @@ type PersistedState = Pick<AuthState, "user" | "isAuthenticated">;
 // ─────────────────────────────────────────────
 
 let hydratePromise: Promise<void> | null = null;
+let hydratedOnce = false;
 
 // ─────────────────────────────────────────────
 // Store
@@ -102,11 +103,13 @@ export const useAuthStore = create<AuthState>()(
 
             // ── HYDRATE (CORE AUTH BOOTSTRAP) ─────
             hydrate: async () => {
+                console.log("here")
                 const state = get();
+                 if (hydratedOnce) return
 
+                console.log("bere")
                 // already initialized
                 if (state.isAuthChecked) return;
-
                 // prevent Strict Mode + concurrent calls
                 if (hydratePromise) return hydratePromise;
 
@@ -149,6 +152,7 @@ export const useAuthStore = create<AuthState>()(
                     }
                 })();
 
+                hydratedOnce = true;
                 return hydratePromise;
             },
 

@@ -5,6 +5,7 @@ import { useAuthStore } from "@/features/auth/store/auth.store";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
     const login = useAuthStore((s) => s.login);
@@ -20,7 +21,7 @@ export default function LoginPage() {
         try {
             await login({ email, password });
             const user = useAuthStore.getState().user;
-
+            console.log(user)
             if (!user) throw new Error("User not found");
             toast.success(`Welcome back, ${user.name || 'User'}!`);
 
@@ -44,420 +45,111 @@ export default function LoginPage() {
         }
     };
 
+    const stats = [{
+        icon: "👨‍👩‍👧‍👦",
+        description: "2,400+ NRN Families",
+        span: "Across 18 countries worldwide"
+    },
+    {
+        icon: "🏥",
+        description: "14 Cities in Nepal",
+        span: "With trained care companions"
+    },
+    {
+        icon: "⚡",
+        description: "24/7 Emergency Response",
+        span: "Average 8-minute dispatch time"
+    }]
+
     return (
         <>
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
-
-                *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-                :root {
-                    --green-deep:  #1A3C34;
-                    --green-mid:   #2D6A5F;
-                    --green-light: #4A9B8C;
-                    --green-pale:  #D4EDE8;
-                    --green-mist:  #EBF6F4;
-                    --saffron:     #E8861A;
-                    --saffron-lt:  #F5A84B;
-                    --cream:       #FAF7F2;
-                    --text-dark:   #1C1C1C;
-                    --text-mid:    #4A4A4A;
-                    --text-soft:   #7A7A7A;
-                    --border:      #E2DDD6;
-                    --error:       #DC2626;
-                }
-
-                html, body { height: 100%; font-family: 'DM Sans', sans-serif; }
-
-                .login-root {
-                    min-height: 100vh;
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    background: var(--cream);
-                }
-
-                /* ── LEFT PANEL ── */
-                .left-panel {
-                    background: var(--green-deep);
-                    position: relative;
-                    overflow: hidden;
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    padding: 3rem 3.5rem;
-                    color: #fff;
-                }
-
-                /* Decorative orbs */
-                .orb {
-                    position: absolute;
-                    border-radius: 50%;
-                    pointer-events: none;
-                }
-                .orb-1 {
-                    width: 420px; height: 420px;
-                    top: -120px; right: -140px;
-                    background: radial-gradient(circle, rgba(74,155,140,.35) 0%, transparent 70%);
-                }
-                .orb-2 {
-                    width: 300px; height: 300px;
-                    bottom: 60px; left: -80px;
-                    background: radial-gradient(circle, rgba(232,134,26,.2) 0%, transparent 70%);
-                }
-                .orb-3 {
-                    width: 180px; height: 180px;
-                    top: 50%; left: 55%;
-                    background: radial-gradient(circle, rgba(255,255,255,.04) 0%, transparent 70%);
-                }
-
-                /* Dot grid texture */
-                .dot-grid {
-                    position: absolute; inset: 0; z-index: 0;
-                    background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
-                    background-size: 28px 28px;
-                }
-
-                .left-top { position: relative; z-index: 1; }
-
-                .brand-mark {
-                    display: flex; align-items: center; gap: .7rem;
-                    text-decoration: none; margin-bottom: 3.5rem;
-                }
-                .brand-icon {
-                    width: 40px; height: 40px; border-radius: 11px;
-                    background: rgba(255,255,255,.12);
-                    border: 1px solid rgba(255,255,255,.18);
-                    display: flex; align-items: center; justify-content: center;
-                    backdrop-filter: blur(6px);
-                }
-                .brand-icon svg { width: 22px; height: 22px; fill: #fff; }
-                .brand-name {
-                    font-family: 'Playfair Display', serif;
-                    font-size: 1.5rem; font-weight: 700;
-                    color: #fff; letter-spacing: -.02em;
-                }
-                .brand-name span { color: var(--saffron-lt); }
-
-                .left-headline {
-                    font-family: 'Playfair Display', serif;
-                    font-size: clamp(2rem, 3vw, 2.8rem);
-                    font-weight: 700; line-height: 1.18;
-                    color: #fff; margin-bottom: 1.2rem;
-                }
-                .left-headline em {
-                    font-style: italic;
-                    color: var(--saffron-lt);
-                }
-                .left-sub {
-                    font-size: .97rem; line-height: 1.75;
-                    color: rgba(255,255,255,.62);
-                    max-width: 340px;
-                }
-
-                /* Stat pills */
-                .stat-row {
-                    display: flex; flex-direction: column; gap: .85rem;
-                    position: relative; z-index: 1;
-                    margin-top: 3rem;
-                }
-                .stat-pill {
-                    display: flex; align-items: center; gap: .9rem;
-                    background: rgba(255,255,255,.07);
-                    border: 1px solid rgba(255,255,255,.1);
-                    border-radius: 14px; padding: .85rem 1.1rem;
-                    backdrop-filter: blur(8px);
-                    animation: slideInLeft .5s ease both;
-                }
-                .stat-pill:nth-child(2) { animation-delay: .1s; }
-                .stat-pill:nth-child(3) { animation-delay: .2s; }
-                .stat-icon {
-                    width: 38px; height: 38px; border-radius: 10px;
-                    background: rgba(255,255,255,.1);
-                    display: flex; align-items: center; justify-content: center;
-                    font-size: 1.1rem; flex-shrink: 0;
-                }
-                .stat-text strong {
-                    display: block; font-size: .95rem;
-                    font-weight: 600; color: #fff;
-                }
-                .stat-text span {
-                    font-size: .78rem; color: rgba(255,255,255,.5);
-                }
-
-                .left-footer {
-                    position: relative; z-index: 1;
-                    font-size: .78rem; color: rgba(255,255,255,.35);
-                    margin-top: 2rem;
-                }
-
-                /* ── RIGHT PANEL ── */
-                .right-panel {
-                    display: flex; flex-direction: column;
-                    justify-content: center; align-items: center;
-                    padding: 3rem 2rem;
-                    background: var(--cream);
-                    position: relative;
-                }
-
-                /* Subtle top-right deco */
-                .right-deco {
-                    position: absolute; top: 0; right: 0;
-                    width: 200px; height: 200px;
-                    background: radial-gradient(ellipse at top right, rgba(74,155,140,.08), transparent 70%);
-                    pointer-events: none;
-                }
-
-                .form-shell {
-                    width: 100%; max-width: 400px;
-                    animation: fadeUp .6s ease both;
-                }
-
-                .form-eyebrow {
-                    display: inline-flex; align-items: center; gap: .45rem;
-                    background: var(--green-pale);
-                    color: var(--green-deep);
-                    font-size: .74rem; font-weight: 700;
-                    letter-spacing: .08em; text-transform: uppercase;
-                    padding: .32rem .85rem; border-radius: 999px;
-                    margin-bottom: 1.6rem;
-                }
-                .eyebrow-dot {
-                    width: 6px; height: 6px; border-radius: 50%;
-                    background: var(--green-light);
-                    animation: pulse 2s infinite;
-                }
-
-                .form-title {
-                    font-family: 'Playfair Display', serif;
-                    font-size: 2rem; font-weight: 700; line-height: 1.2;
-                    color: var(--green-deep); margin-bottom: .55rem;
-                }
-                .form-desc {
-                    font-size: .9rem; color: var(--text-soft);
-                    margin-bottom: 2.2rem; line-height: 1.6;
-                }
-
-                /* ── INPUTS ── */
-                .field { display: flex; flex-direction: column; gap: .45rem; margin-bottom: 1.1rem; }
-                .field-label {
-                    font-size: .8rem; font-weight: 600;
-                    color: var(--text-mid); letter-spacing: .02em;
-                }
-                .input-wrap { position: relative; }
-                .input-icon {
-                    position: absolute; left: .95rem; top: 50%; transform: translateY(-50%);
-                    color: var(--text-soft); pointer-events: none;
-                    display: flex; align-items: center;
-                }
-                .input-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
-
-                .field input {
-                    width: 100%;
-                    background: #fff;
-                    border: 1.5px solid var(--border);
-                    border-radius: 10px;
-                    padding: .78rem 1rem .78rem 2.65rem;
-                    font-size: .95rem; font-family: 'DM Sans', sans-serif;
-                    color: var(--text-dark);
-                    outline: none;
-                    transition: border-color .2s, box-shadow .2s;
-                    -webkit-appearance: none;
-                }
-                .field input::placeholder { color: #BDB8B0; }
-                .field input:focus {
-                    border-color: var(--green-light);
-                    box-shadow: 0 0 0 3px rgba(74,155,140,.12);
-                }
-                .field input:disabled { opacity: .55; cursor: not-allowed; }
-
-                /* password toggle */
-                .pw-toggle {
-                    position: absolute; right: .9rem; top: 50%; transform: translateY(-50%);
-                    background: none; border: none; cursor: pointer;
-                    color: var(--text-soft); padding: .2rem;
-                    display: flex; align-items: center;
-                    transition: color .2s;
-                }
-                .pw-toggle:hover { color: var(--green-deep); }
-                .pw-toggle svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
-
-                .field-row {
-                    display: flex; justify-content: space-between; align-items: center;
-                }
-                .forgot-link {
-                    font-size: .8rem; color: var(--green-mid);
-                    text-decoration: none; font-weight: 500;
-                    transition: color .2s;
-                }
-                .forgot-link:hover { color: var(--green-deep); }
-
-                /* ── SUBMIT ── */
-                .submit-btn {
-                    width: 100%; margin-top: 1.6rem;
-                    background: var(--green-deep); color: #fff;
-                    border: none; border-radius: 10px;
-                    padding: .9rem 1rem;
-                    font-size: .98rem; font-weight: 600;
-                    font-family: 'DM Sans', sans-serif;
-                    cursor: pointer; letter-spacing: .01em;
-                    box-shadow: 0 4px 20px rgba(26,60,52,.25);
-                    transition: background .2s, transform .15s, box-shadow .2s;
-                    display: flex; align-items: center; justify-content: center; gap: .6rem;
-                }
-                .submit-btn:hover:not(:disabled) {
-                    background: var(--green-mid);
-                    transform: translateY(-1px);
-                    box-shadow: 0 8px 28px rgba(26,60,52,.3);
-                }
-                .submit-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-
-                /* spinner */
-                .spinner {
-                    width: 17px; height: 17px;
-                    border: 2.5px solid rgba(255,255,255,.3);
-                    border-top-color: #fff;
-                    border-radius: 50%;
-                    animation: spin .75s linear infinite;
-                }
-
-                /* divider */
-                .divider {
-                    display: flex; align-items: center; gap: 1rem;
-                    margin: 1.6rem 0; color: var(--text-soft);
-                    font-size: .78rem;
-                }
-                .divider::before, .divider::after {
-                    content: ''; flex: 1;
-                    height: 1px; background: var(--border);
-                }
-
-                /* trust badges */
-                .trust-row {
-                    display: flex; align-items: center; justify-content: center;
-                    gap: 1.4rem; margin-top: 1.8rem;
-                }
-                .trust-item {
-                    display: flex; align-items: center; gap: .4rem;
-                    font-size: .75rem; color: var(--text-soft);
-                }
-                .trust-item svg { width: 14px; height: 14px; stroke: var(--green-light); fill: none; stroke-width: 2; }
-
-                /* bottom link */
-                .bottom-link {
-                    text-align: center; margin-top: 2rem;
-                    font-size: .85rem; color: var(--text-soft);
-                }
-                .bottom-link a { color: var(--green-mid); font-weight: 600; text-decoration: none; }
-                .bottom-link a:hover { color: var(--green-deep); }
-
-                /* ── ANIMATIONS ── */
-                @keyframes fadeUp {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to   { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes slideInLeft {
-                    from { opacity: 0; transform: translateX(-16px); }
-                    to   { opacity: 1; transform: translateX(0); }
-                }
-                @keyframes spin { to { transform: rotate(360deg); } }
-                @keyframes pulse {
-                    0%, 100% { opacity: 1; transform: scale(1); }
-                    50%       { opacity: .5; transform: scale(.75); }
-                }
-
-                /* ── RESPONSIVE ── */
-                @media (max-width: 820px) {
-                    .login-root { grid-template-columns: 1fr; }
-                    .left-panel { display: none; }
-                    .right-panel { padding: 2.5rem 1.5rem; justify-content: flex-start; padding-top: 4rem; }
-                }
-            `}</style>
-
-            <div className="login-root">
+            <div className="min-h-screen grid md:grid-cols-2 bg-(--cream)">
 
                 {/* ── LEFT PANEL ── */}
-                <div className="left-panel">
-                    <div className="orb orb-1" />
-                    <div className="orb orb-2" />
-                    <div className="orb orb-3" />
-                    <div className="dot-grid" />
+                <div className="hidden md:flex flex-col justify-between relative overflow-hidden bg-(--green-deep) text-white px-14 py-12">
+                    <div className="absolute -top-32 -right-36 h-105 w-105 rounded-full bg-[radial-gradient(circle,rgba(74,155,140,.35)_0%,transparent_70%)]" />
 
-                    <div className="left-top">
-                        <Link href="/" className="brand-mark">
-                            <div className="brand-icon">
-                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 21C12 21 3 14.5 3 8.5C3 5.46 5.46 3 8.5 3C10.24 3 11.91 3.81 13 5.08C14.09 3.81 15.76 3 17.5 3C20.54 3 23 5.46 23 8.5C23 14.5 12 21 12 21Z" opacity=".4"/>
-                                    <path d="M9 11H11V9H13V11H15V13H13V15H11V13H9V11Z"/>
-                                </svg>
+                    <div className="absolute bottom-16 -left-20 h-75 w-75 rounded-full bg-[radial-gradient(circle,rgba(232,134,26,.2)_0%,transparent_70%)]" />
+
+                    <div className="absolute left-[55%] top-1/2 h-45 w-45 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,.04)_0%,transparent_70%)]" />
+                    <div className="absolute inset-0 z-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] bg-size-[28px_28px]"></div>
+                    <div className="relative z-1">
+                        <Link
+                            href="/"
+                            className="mb-14 flex items-center gap-3"
+                        >
+                            <div className="flex h-10 w-10 items-center justify-center rounded-[11px] border border-white/18 bg-white/12 backdrop-blur-[6px]">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-[11px] border border-white/18 bg-white/12 backdrop-blur-[6px]">
+                                    <svg className="h-5.5 w-5.5 fill-white" viewBox="0 0 24 24">
+                                        <path d="M12 21C12 21 3 14.5 3 8.5C3 5.46 5.46 3 8.5 3C10.24 3 11.91 3.81 13 5.08C14.09 3.81 15.76 3 17.5 3C20.54 3 23 5.46 23 8.5C23 14.5 12 21 12 21Z" opacity=".4" />
+                                        <path d="M9 11H11V9H13V11H15V13H13V15H11V13H9V11Z" />
+                                    </svg>
+                                </div>
+
                             </div>
-                            <span className="brand-name">Pariwaar<span>+</span></span>
+                            <span className="font-['Playfair_Display',serif] text-[1.5rem] font-bold text-white tracking-[-0.02em]">Pariwaar<span> +</span></span>
                         </Link>
 
-                        <h2 className="left-headline">
+                        <h2 className="font-['Playfair_Display',serif] text-[clamp(2rem,3vw,2.8rem)] font-bold leading-[1.18] text-white mb-[1.2rem]">
                             Care that travels<br />
                             <em>every distance.</em>
                         </h2>
-                        <p className="left-sub">
+                        <p className="text-[0.97rem] leading-[1.75] text-white/62 max-w-85">
                             Connecting Nepali families abroad with real-time health monitoring, companion visits, and peace of mind — for आमाबुवा back home.
                         </p>
 
-                        <div className="stat-row">
-                            <div className="stat-pill">
-                                <div className="stat-icon">👨‍👩‍👧‍👦</div>
-                                <div className="stat-text">
-                                    <strong>2,400+ NRN Families</strong>
-                                    <span>Across 18 countries worldwide</span>
+                        <div className="relative z-10 flex flex-col gap-[0.85rem] mt-12">
+                            {stats.map((stat, index) => (
+                                <div key={index} className="flex items-center gap-[0.9rem] bg-white/[0.07] border border-white/10 rounded-[14px] px-[1.1rem] py-[0.85rem] backdrop-blur-sm animate-[slideInLeft_0.5s_ease_both]">
+                                    <div className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-[10px] bg-white/10 text-[1.1rem]">{stat.icon}</div>
+                                    <div className="block text-[0.95rem] font-semibold text-white">
+                                        <strong>{stat.description}</strong>
+                                        <span> {stat.span}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="stat-pill">
-                                <div className="stat-icon">🏥</div>
-                                <div className="stat-text">
-                                    <strong>14 Cities in Nepal</strong>
-                                    <span>With trained care companions</span>
-                                </div>
-                            </div>
-                            <div className="stat-pill">
-                                <div className="stat-icon">⚡</div>
-                                <div className="stat-text">
-                                    <strong>24/7 Emergency Response</strong>
-                                    <span>Average 8-minute dispatch time</span>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
 
-                    <div className="left-footer">
+                    <div className="relative z-10 text-[0.78rem] text-white/35 mt-8">
                         © 2025 Pariwaar Plus Pvt. Ltd. · Registered in Nepal 🇳🇵
                     </div>
                 </div>
 
                 {/* ── RIGHT PANEL ── */}
-                <div className="right-panel">
-                    <div className="right-deco" />
+                <div className="flex flex-col justify-start md:justify-center items-center px-6 py-10 md:px-8 md:py-12 bg-(--cream) relative">
+                    <div
+                        className="pointer-events-none absolute top-0 right-0 h-50 w-50"
+                        style={{
+                            background:
+                                "radial-gradient(ellipse at top right, rgba(74,155,140,.08), transparent 70%)",
+                        }}
+                    />
 
-                    <div className="form-shell">
-                        <div className="form-eyebrow">
-                            <span className="eyebrow-dot" />
+                    <div className="w-full max-w-100 animate-fade-up">
+                        <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-(--green-pale) px-3.5 py-1.5 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-(--green-deep)">
+                            <span className="h-1.5 w-1.5 rounded-full bg-(--green-light) animate-pulse" />
                             Secure Portal
                         </div>
 
-                        <h1 className="form-title">Welcome back</h1>
-                        <p className="form-desc">
+                        <h1 className="font-['Playfair_Display',serif] text-[2rem] font-bold leading-[1.2] text-(--green-deep) mb-[0.55rem]">Welcome back</h1>
+                        <p className="text-[0.9rem] text-(--text-soft) leading-[1.6] mb-[2.2rem]">
                             Sign in to check on your family's wellbeing.
                         </p>
 
                         <form onSubmit={handleSubmit}>
                             {/* Email */}
-                            <div className="field">
-                                <label className="field-label" htmlFor="email">Email Address</label>
-                                <div className="input-wrap">
-                                    <span className="input-icon">
+                            <div className="flex flex-col gap-[0.45rem] mb-[1.1rem]">
+                                <label className="text-sm font-semibold text-(--text-mid) tracking-wide" htmlFor="email">Email Address</label>
+                                <div className="relative">
+                                    <span className="absolute left-[0.95rem] top-1/2 -translate-y-1/2 pointer-events-none flex items-center text-(--text-soft)">
                                         <svg viewBox="0 0 24 24">
-                                            <rect x="2" y="4" width="20" height="16" rx="2"/>
-                                            <polyline points="2,4 12,13 22,4"/>
+                                            <rect x="2" y="4" width="20" height="16" rx="2" />
+                                            <polyline points="2,4 12,13 22,4" />
                                         </svg>
                                     </span>
                                     <input
+                                        className="w-full bg-white border-[1.5px] rounded-[10px] py-4 pr-4 pl-4 text-[0.95rem] font-['DM_Sans',sans-serif] text-(--text-dark) outline-none appearance-none transition-[border-color,box-shadow] duration-200 placeholder-[#BDB8B0] focus:border-(--green-light) focus:shadow-[0_0_0_3px_rgba(74,155,140,0.12)] disabled:opacity-[0.55] disabled:cursor-not-allowed"
                                         id="email"
                                         type="email"
                                         placeholder="you@example.com"
@@ -471,19 +163,22 @@ export default function LoginPage() {
                             </div>
 
                             {/* Password */}
-                            <div className="field">
-                                <div className="field-row">
-                                    <label className="field-label" htmlFor="password">Password</label>
-                                    <a href="#" className="forgot-link">Forgot password?</a>
+                            <div className="flex flex-col gap-2 mb-4">
+                                <div className="flex items-center justify-between">
+                                    <label className="text-sm font-semibold text-(--text-mid) tracking-wide" htmlFor="password">Password</label>
+                                    <a href="#" className="text-[0.8rem] text-(--green-mid) no-underline font-medium transition-colors duration-200 hover:text-(--green-deep)">
+                                        Forgot password?
+                                    </a>
                                 </div>
-                                <div className="input-wrap">
-                                    <span className="input-icon">
+                                <div className="relative">
+                                    <span className="absolute left-[0.95rem] top-1/2 -translate-y-1/2 text-(--text-soft) pointer-events-none flex items-center">
                                         <svg viewBox="0 0 24 24">
-                                            <rect x="3" y="11" width="18" height="11" rx="2"/>
-                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                            <rect x="3" y="11" width="18" height="11" rx="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                                         </svg>
                                     </span>
                                     <input
+                                        className="w-full bg-white border-[1.5px] rounded-[10px] py-4 pr-4 pl-4 text-[0.95rem] font-['DM_Sans',sans-serif] text-(--text-dark) outline-none appearance-none transition-[border-color,box-shadow] duration-200 placeholder-[#BDB8B0] focus:border-(--green-light) focus:shadow-[0_0_0_3px_rgba(74,155,140,0.12)] disabled:opacity-[0.55] disabled:cursor-not-allowed"
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         placeholder="Enter your password"
@@ -495,21 +190,14 @@ export default function LoginPage() {
                                     />
                                     <button
                                         type="button"
-                                        className="pw-toggle"
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer flex items-center p-1 text-(--text-soft) transition-colors duration-200"
                                         onClick={() => setShowPassword((v) => !v)}
                                         aria-label={showPassword ? "Hide password" : "Show password"}
                                     >
                                         {showPassword ? (
-                                            <svg viewBox="0 0 24 24">
-                                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                                                <line x1="1" y1="1" x2="23" y2="23"/>
-                                            </svg>
+                                            <EyeOff className="w-6 h-6" />
                                         ) : (
-                                            <svg viewBox="0 0 24 24">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                <circle cx="12" cy="12" r="3"/>
-                                            </svg>
+                                            <Eye className="w-6 h-6" />
                                         )}
                                     </button>
                                 </div>
@@ -517,32 +205,29 @@ export default function LoginPage() {
 
                             <button
                                 type="submit"
-                                className="submit-btn"
+                                className="w-full mt-6 bg-(--green-deep) text-white border-none rounded-[10px] py-3.5 px-4 text-[0.98rem] font-semibold font-['DM_Sans',sans-serif] cursor-pointer tracking-[0.01em] shadow-[0_4px_20px_rgba(26,60,52,0.25)] flex items-center justify-center gap-2.5 transition-[background,transform,box-shadow] duration-[200ms,150ms,200ms]"
                                 disabled={isLoading || !email || !password}
                             >
                                 {isLoading ? (
                                     <>
-                                        <span className="spinner" />
+                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         Signing in…
                                     </>
                                 ) : (
                                     <>
                                         Sign In
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                                            <line x1="5" y1="12" x2="19" y2="12"/>
-                                            <polyline points="12,5 19,12 12,19"/>
-                                        </svg>
+                                        <ArrowRight className="w-4 h-4" />
                                     </>
                                 )}
                             </button>
                         </form>
-                        <p className="bottom-link">
+                        <p className="text-center mt-8 text-sm text-(--text-soft)">
                             New to Pariwaar+?{" "}
                             <a href="#">Contact us to get started</a>
                         </p>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 }

@@ -155,22 +155,22 @@ function SidebarSkeleton({ className }: { className?: string }) {
     return (
         <div className={cn("flex flex-col h-full bg-[#0d1420]", className)}>
             {/* Logo */}
-            <div className="px-5 pt-6 pb-5 border-b border-white/[0.06]">
-                <div className="h-7 w-28 bg-white/[0.06] animate-pulse rounded-lg" />
+            <div className="px-5 pt-6 pb-5 border-b border-white/6">
+                <div className="h-7 w-28 bg-white/6 animate-pulse rounded-lg" />
             </div>
             {/* Nav items */}
             <div className="flex-1 px-3 pt-5 space-y-1.5">
                 {[1, 2, 3, 4, 5].map((i) => (
                     <div
                         key={i}
-                        className="h-10 w-full bg-white/[0.04] animate-pulse rounded-xl"
+                        className="h-10 w-full bg-white/4 animate-pulse rounded-xl"
                         style={{ animationDelay: `${i * 80}ms` }}
                     />
                 ))}
             </div>
             {/* Footer */}
-            <div className="px-4 py-4 border-t border-white/[0.06]">
-                <div className="h-10 w-full bg-white/[0.04] animate-pulse rounded-xl" />
+            <div className="px-4 py-4 border-t border-white/6">
+                <div className="h-10 w-full bg-white/4 animate-pulse rounded-xl" />
             </div>
         </div>
     );
@@ -196,14 +196,14 @@ export default function Sidebar({ className }: { className?: string }) {
 
     return (
         <div className={cn(
-            "flex flex-col h-full w-64 bg-[#0d1420] border-r border-white/[0.06]",
+            "flex flex-col h-full w-64 bg-[#0d1420] border-r border-white/6",
             className
         )}>
 
             {/* ── Logo ── */}
-            <div className="px-5 pt-6 pb-5 border-b border-white/[0.06]">
-                <Link href="/dashboard" className="flex items-center gap-2.5 group">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-600/30 transition-colors">
+            <div className="px-5 pt-6 pb-5 border-b border-white/6">
+                <Link href="/dashboard/admin" className="flex items-center gap-2.5 group">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center shrink-0 group-hover:bg-emerald-600/30 transition-colors">
                         {/* Heart + plus icon */}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path
@@ -223,7 +223,7 @@ export default function Sidebar({ className }: { className?: string }) {
 
             {/* ── Nav section label ── */}
             <div className="px-5 pt-5 pb-2">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-600">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">
                     Navigation
                 </p>
             </div>
@@ -240,18 +240,18 @@ export default function Sidebar({ className }: { className?: string }) {
                                 "group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 border",
                                 isActive
                                     ? cn("text-white border", route.activeBg ?? "bg-white/10 border-white/10")
-                                    : "text-slate-400 border-transparent hover:text-slate-200 hover:bg-white/[0.05]"
+                                    : "text-slate-400 border-transparent hover:text-slate-200 hover:bg-white/5"
                             )}
                         >
                             {/* Active indicator bar */}
                             <span className={cn(
-                                "absolute left-0 w-[3px] h-5 rounded-r-full transition-all",
+                                "absolute left-0 w-0.75 h-5 rounded-r-full transition-all",
                                 isActive ? "opacity-100" : "opacity-0"
                             )} />
 
                             <route.icon
                                 className={cn(
-                                    "h-4.5 w-4.5 flex-shrink-0 transition-colors",
+                                    "h-4.5 w-4.5 shrink-0 transition-colors",
                                     isActive
                                         ? (route.activeColor ?? "text-white")
                                         : (route.color ?? "text-slate-500")
@@ -263,7 +263,7 @@ export default function Sidebar({ className }: { className?: string }) {
 
                             {/* Active dot */}
                             {isActive && (
-                                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/40 flex-shrink-0" />
+                                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white/40 shrink-0" />
                             )}
                         </Link>
                     );
@@ -271,10 +271,10 @@ export default function Sidebar({ className }: { className?: string }) {
             </nav>
 
             {/* ── User footer ── */}
-            <div className="px-3 py-3 border-t border-white/[0.06]">
-                <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition-colors cursor-default">
+            <div className="px-3 py-3 border-t border-white/6">
+                <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors cursor-default">
                     {/* Avatar */}
-                    <div className="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
                         <span className="text-xs font-bold text-emerald-400">{initials}</span>
                     </div>
 
@@ -285,7 +285,7 @@ export default function Sidebar({ className }: { className?: string }) {
                         </p>
                         {roleMeta && (
                             <div className="flex items-center gap-1 mt-0.5">
-                                <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", roleMeta.dot)} />
+                                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", roleMeta.dot)} />
                                 <span className={cn("text-[10px] font-medium truncate", roleMeta.color)}>
                                     {roleMeta.label}
                                 </span>
