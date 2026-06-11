@@ -45,13 +45,13 @@ export function DeleteConfirmDialog({
             <AlertDialogContent className="p-0 gap-0 overflow-hidden max-w-md">
 
                 {/* ── Warning stripe ── */}
-                <div className="h-1.5 w-full bg-gradient-to-r from-red-500 to-rose-500" />
+                <div className="h-1.5 w-full bg-linear-to-r from-red-500 to-rose-500" />
 
                 {/* ── Header ── */}
                 <AlertDialogHeader className="px-6 pt-6 pb-5">
                     <div className="flex items-start gap-4">
                         {/* Icon */}
-                        <div className="w-11 h-11 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 flex items-center justify-center flex-shrink-0">
+                        <div className="w-11 h-11 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 flex items-center justify-center shrink-0">
                             <TriangleAlert className="w-5 h-5 text-red-500" />
                         </div>
 
@@ -71,7 +71,7 @@ export function DeleteConfirmDialog({
 
                     {/* Warning note */}
                     <div className="mt-4 flex items-center gap-2.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/60 rounded-lg px-3.5 py-2.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0 animate-pulse" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 animate-pulse" />
                         <p className="text-xs font-medium text-red-600 dark:text-red-400">
                             All associated data will be permanently erased.
                         </p>

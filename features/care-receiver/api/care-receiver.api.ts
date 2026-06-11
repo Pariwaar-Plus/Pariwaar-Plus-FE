@@ -60,10 +60,17 @@ export const createCareReceiver = async (
     data: Omit<CareReceiver, "id" | "createdAt" | "updatedAt">
 ): Promise<CareReceiver> => {
 
-    const response = await api.post("/care-receiver", data)
-    console.log(response)
+    try {
+        const response = await api.patch<CareReceiver>(
+            "/care-receiver",
+            data
+        );
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error, "Failed to update client");
+    }
 
-    return data;
+
 };
 
 //    UPDATE
@@ -86,15 +93,14 @@ export const updateCareReceiver = async (
 export const deleteCareReceiver = async (
     id: string
 ): Promise<{ id: string }> => {
-    await delay(500);
-
-    const exists = careReceivers.some((r) => r.id === id);
-
-    if (!exists) {
-        throw new Error("Care Receiver not found");
+    try {
+        const response = await api.delete<CareReceiver>(
+            `/care-receiver/${id}`
+        );
+        return { id };
+    } catch (error) {
+        throw handleApiError(error, "Failed to update client");
     }
 
-    careReceivers = careReceivers.filter((r) => r.id !== id);
 
-    return { id };
 };
