@@ -2,8 +2,9 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getClients } from "@/features/clients/api/client.api";
 
 import {
     Dialog,
@@ -21,6 +22,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -45,25 +48,33 @@ export function AddCareReceiverModal({
 }: AddCareReceiverModalProps) {
     const queryClient = useQueryClient();
 
+    const { data: clients = [], isLoading, isError } = useQuery({
+        queryKey: ["clients"],
+        queryFn: getClients,
+    });
+
     const form = useForm<CareReceiverFormValues>({
         resolver: zodResolver(careReceiverSchema),
         defaultValues: {
             name: "",
-            dob: "",
+            dateOfBirth: "",
             gender: "MALE",
-
-            address: "",
+            phone: "",
             city: "",
-            googleMapsUrl: "",
-            contact: "",
+            district: "",
+            ward: "",
+            tole: "",
 
-            medicalConditions: "",
-            dependencyLevel: "LOW",
-
+            bloodGroup: "",
+            medicalCondition: "",
+            allergies: "",
+            mobilityStatus: "INDEPENDENT",
+            // googleMapsUrl: "",
+            emergencyContactName: "",
+            emergencyContactPhone: "",
             clientId: "",
-            assignedAgentId: "",
 
-            status: "ACTIVE",
+
         },
     });
 
@@ -72,7 +83,7 @@ export function AddCareReceiverModal({
 
         onSuccess: () => {
             queryClient.invalidateQueries({
-            queryKey: ["care-receivers"],
+                queryKey: ["care-receivers"],
             });
 
             toast.success("Care receiver added successfully");
@@ -87,231 +98,288 @@ export function AddCareReceiverModal({
     });
 
     const onSubmit = (values: CareReceiverFormValues) => {
-        mutation.mutate({
-            ...values,
-
-            // convert string → array
-            medicalConditions: values.medicalConditions
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-        });
+        mutation.mutate(values);
     };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[550px]">
-            <DialogHeader>
-                <DialogTitle>Add Care Receiver</DialogTitle>
-                <DialogDescription>
-                    Create a new care receiver profile linked to a client.
-                </DialogDescription>
-            </DialogHeader>
+            <DialogContent className="sm:max-w-137.5">
+                <DialogHeader>
+                    <DialogTitle>Add Care Receiver</DialogTitle>
+                    <DialogDescription>
+                        Create a new care receiver profile linked to a client.
+                    </DialogDescription>
+                </DialogHeader>
 
-            <Form {...form}>
-                <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4 pt-4"
-                >
-                {/* Name */}
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                        <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-4 pt-4"
+                    >
+                        {/* Name */}
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Full Name</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                {/* DOB + Gender */}
-                <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                    control={form.control}
-                    name="dob"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Date of Birth</FormLabel>
-                        <FormControl>
-                            <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-
-                    <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Gender</FormLabel>
-                        <FormControl>
-                            <Input {...field} placeholder="MALE, FEMALE..." />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                </div>
-
-                {/* Contact */}
-                <FormField
-                    control={form.control}
-                    name="contact"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Contact</FormLabel>
-                        <FormControl>
-                        <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-
-                {/* Address */}
-                <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Address</FormLabel>
-                        <FormControl>
-                        <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-
-                {/* City + Map */}
-                <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                            <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-
-                    <FormField
-                    control={form.control}
-                    name="googleMapsUrl"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Google Maps URL</FormLabel>
-                        <FormControl>
-                            <Input
-                            {...field}
-                            placeholder="https://maps.google.com/..."
+                        {/* DOB + Gender */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="dateOfBirth"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Date of Birth</FormLabel>
+                                        <FormControl>
+                                            <Input type="date" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
                             />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                </div>
 
-                {/* Medical Conditions */}
-                <FormField
-                    control={form.control}
-                    name="medicalConditions"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>
-                            Medical Conditions (comma separated)
-                        </FormLabel>
-                        <FormControl>
-                        <Input
-                            {...field}
-                            placeholder="Diabetes, BP, Heart Disease"
+                            <FormField
+                                control={form.control}
+                                name="gender"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Gender</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            value={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger >
+                                                    <SelectValue placeholder="Select gender" />
+                                                </SelectTrigger>
+                                            </FormControl>
+
+                                            <SelectContent>
+                                                <SelectItem value="MALE">Male</SelectItem>
+                                                <SelectItem value="FEMALE">Female</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        {/* Contact */}
+                        <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Contact Number (Mobile Number)</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
 
-                {/* Dependency Level */}
-                <FormField
-                    control={form.control}
-                    name="dependencyLevel"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Dependency Level</FormLabel>
-                        <FormControl>
-                        <Input
-                            {...field}
-                            placeholder="LOW, MEDIUM, HIGH"
+                        {/* City + District */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="city"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>City</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+
+                            <FormField
+                                control={form.control}
+                                name="district"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>District</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        {/* Ward + Tole */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="ward"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Ward No</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+
+                            <FormField
+                                control={form.control}
+                                name="tole"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Tole</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+
+
+
+
+                        {/* Medical Conditions */}
+                        <FormField
+                            control={form.control}
+                            name="medicalCondition"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Medical Conditions (comma separated)
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            value={field.value ?? ""}
+                                            placeholder="Diabetes, BP, Heart Disease"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
 
-                {/* Relationship Links */}
-                <FormField
-                    control={form.control}
-                    name="clientId"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Client ID</FormLabel>
-                        <FormControl>
-                        <Input {...field} placeholder="c1, c2..." />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
+                        {/* Dependency Level
+                        <FormField
+                            control={form.control}
+                            name="dependencyLevel"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Dependency Level</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            placeholder="LOW, MEDIUM, HIGH"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        /> */}
 
-                <FormField
-                    control={form.control}
-                    name="assignedAgentId"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Assigned Agent ID</FormLabel>
-                        <FormControl>
-                        <Input {...field} placeholder="optional" />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
+                        {/* Relationship Links */}
+                        <FormField
+                            control={form.control}
+                            name="clientId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Select Client</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                        disabled={isLoading}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue
+                                                    placeholder={
+                                                        isLoading
+                                                            ? "Loading clients..."
+                                                            : "Select a client"
+                                                    }
+                                                />
+                                            </SelectTrigger>
+                                        </FormControl>
 
-                {/* Actions */}
-                <div className="flex justify-end gap-3 pt-4">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => onOpenChange(false)}
-                        disabled={mutation.isPending}
-                    >
-                        Cancel
-                    </Button>
+                                        <SelectContent position="popper"
+                                            side="bottom"
+                                            align="start">
+                                            {clients.map((client) => (
+                                                <SelectItem
+                                                    key={client.id}
+                                                    value={client.id}
+                                                >
+                                                    {client.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
 
-                    <Button
-                    type="submit"
-                    disabled={mutation.isPending}
-                    >
-                    {mutation.isPending
-                        ? "Saving..."
-                        : "Save Changes"}
-                    </Button>
-                </div>
-                </form>
-            </Form>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* <FormField
+                            control={form.control}
+                            name="assignedAgentId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Assigned Agent ID</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="optional" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        /> */}
+
+                        {/* Actions */}
+                        <div className="flex justify-end gap-3 pt-4">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => onOpenChange(false)}
+                                disabled={mutation.isPending}
+                            >
+                                Cancel
+                            </Button>
+
+                            <Button
+                                type="submit"
+                                disabled={mutation.isPending}
+                            >
+                                {mutation.isPending
+                                    ? "Saving..."
+                                    : "Save Changes"}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     );

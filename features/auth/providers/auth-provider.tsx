@@ -42,7 +42,6 @@ export function AuthProvider({
     }, [hydrate]);
     
     // block UI until auth state is resolved
-    console.log("Adsf",isAuthChecked)
     if (!isAuthChecked) {
         return (
             <>

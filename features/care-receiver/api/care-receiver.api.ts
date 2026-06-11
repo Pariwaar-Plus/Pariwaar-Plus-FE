@@ -1,28 +1,31 @@
+import api from "@/lib/axios";
 import { CareReceiver } from "../types/care-receiver.type";
+import axios, { AxiosError } from "axios";
+import { handleApiError } from "@/lib/handle-api-error";
 
 // mock DB (temporary)
-let careReceivers: CareReceiver[] = [
-    {
-        id: "r1",
-        name: "Hari Sharma",
-        dateOfBirth: "1948-03-12",
-        gender: "MALE",
+// let careReceivers: CareReceiver[] = [
+//     {
+//         id: "r1",
+//         name: "Hari Sharma",
+//         dateOfBirth: "1948-03-12",
+//         gender: "MALE",
 
-        city: "Kathmandu",
-        // googleMapsUrl: "https://maps.google.com/example",
-        phone: "9800000000",
+//         city: "Kathmandu",
+//         // googleMapsUrl: "https://maps.google.com/example",
+//         phone: "9800000000",
 
-        medicalCondition: "Diabetes, Hypertension",
-        // dependencyLevel: "HIGH",
+//         medicalCondition: "Diabetes, Hypertension",
+//         // dependencyLevel: "HIGH",
 
-        clientId: "c1",
-        // assignedAgentId: "1",
+//         clientId: "c1",
+//         // assignedAgentId: "1",
 
-        status: "ACTIVE",
+//         status: "ACTIVE",
 
-        createdAt: new Date().toISOString(),
-    },
-];
+//         createdAt: new Date().toISOString(),
+//     },
+// ];
 
 // delay helper
 const delay = (ms: number) =>
@@ -31,24 +34,36 @@ const delay = (ms: number) =>
 //    READ
 export const getCareReceivers = async (): Promise<CareReceiver[]> => {
     await delay(600);
-    return careReceivers;
+    const response = await api.get('/care-receiver/');
+    return response.data
 };
+
+export const getCareReceiverProfile = async (id: string): Promise<CareReceiver> => {
+    try {
+        const response = await api.get<{ success: boolean; data: CareReceiver }>(
+            `/care-receiver/${id}`
+        );
+        return response.data.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError<{ message: string }>;
+            throw new Error(
+                axiosError.response?.data?.message || axiosError.message
+            );
+        }
+        throw new Error("Failed to fetch client profile");
+    }
+}
 
 //    CREATE
 export const createCareReceiver = async (
     data: Omit<CareReceiver, "id" | "createdAt" | "updatedAt">
 ): Promise<CareReceiver> => {
-    await delay(700);
 
-    const newReceiver: CareReceiver = {
-        ...data,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-    };
+    const response = await api.post("/care-receiver", data)
+    console.log(response)
 
-    careReceivers.push(newReceiver);
-
-    return newReceiver;
+    return data;
 };
 
 //    UPDATE
@@ -56,21 +71,15 @@ export const updateCareReceiver = async (
     id: string,
     data: Partial<CareReceiver>
 ): Promise<CareReceiver> => {
-    await delay(700);
-
-    const index = careReceivers.findIndex((r) => r.id === id);
-
-    if (index === -1) {
-        throw new Error("Care Receiver not found");
+    try {
+        const response = await api.patch<CareReceiver>(
+            `/care-receiver/${id}`,
+            data
+        );
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error, "Failed to update client");
     }
-
-    careReceivers[index] = {
-        ...careReceivers[index],
-        ...data,
-        updatedAt: new Date().toISOString(),
-    };
-
-    return careReceivers[index];
 };
 
 //    DELETE

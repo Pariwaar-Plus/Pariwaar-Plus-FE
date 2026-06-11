@@ -63,7 +63,7 @@ function InfoRow({
 }) {
     return (
         <div className="flex items-start gap-3 py-2.5 border-b border-slate-50 dark:border-slate-800/60 last:border-0">
-            <div className="w-7 h-7 rounded-md bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="w-7 h-7 rounded-md bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
             <Icon className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
             </div>
             <div className="min-w-0 flex-1">
@@ -102,7 +102,7 @@ function StatCard({
     };
     return (
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-4 flex items-center gap-3">
-            <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0", colorMap[color])}>
+            <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0", colorMap[color])}>
             <Icon className="w-4 h-4" />
             </div>
             <div>
@@ -136,7 +136,7 @@ function ProfileSkeleton() {
     return (
         <div className="animate-pulse">
             <div className="px-6 pt-6 pb-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-slate-200 dark:bg-slate-700 flex-shrink-0" />
+            <div className="w-14 h-14 rounded-2xl bg-slate-200 dark:bg-slate-700 shrink-0" />
             <div className="flex-1 space-y-2">
                 <div className="h-4 w-36 rounded bg-slate-200 dark:bg-slate-700" />
                 <div className="h-3 w-48 rounded bg-slate-200 dark:bg-slate-700" />
@@ -182,7 +182,7 @@ function ProfileContent({ client }: { client: Client }) {
             <div className="px-6 pt-6 pb-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
             <div className="flex items-start gap-4">
                 <div className={cn(
-                "w-14 h-14 rounded-2xl flex items-center justify-center text-base font-bold flex-shrink-0 border-2 border-white dark:border-slate-700 shadow-sm",
+                "w-14 h-14 rounded-2xl flex items-center justify-center text-base font-bold shrink-0 border-2 border-white dark:border-slate-700 shadow-sm",
                 avatarColor(client.name)
                 )}>
                 {getInitials(client.name)}
@@ -281,7 +281,7 @@ function ProfileContent({ client }: { client: Client }) {
                         key={receiver.id}
                         className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 px-4 py-3 flex items-center gap-3"
                         >
-                        <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center shrink-0">
                             <User className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -345,7 +345,7 @@ export function ClientProfileModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[520px] p-0 gap-0 overflow-hidden">
+        <DialogContent className="sm:max-w-130 p-0 gap-0 overflow-hidden">
             <VisuallyHidden>
                 <DialogTitle>Client Profile</DialogTitle>
             </VisuallyHidden>

@@ -23,20 +23,17 @@ export interface CareReceiver {
     tole:     string;
 
     // Medical
-    bloodGroup:       string | null;
-    medicalCondition: string | null;
-    allergies:        string | null;
+    bloodGroup?:       string | null;
+    medicalCondition?: string | null;
+    allergies?:        string | null;
     mobilityStatus:   MobilityStatus;
-    notes:            string | null;
+    notes?:            string | null;
 
     // Emergency Contact
-    emergencyContactName:  string | null;
-    emergencyContactPhone: string | null;
+    emergencyContactName?:  string | null;
+    emergencyContactPhone?: string | null;
 
     // Relations
     assignments?: CareAssignment[];
 
-    // Meta
-    createdAt: string;
-    updatedAt: string;
 }

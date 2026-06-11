@@ -81,7 +81,7 @@ function TableSkeleton() {
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-4 py-3.5 animate-pulse">
-                <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex-shrink-0" />
+                <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0" />
                 <div className="flex-1 space-y-1.5">
                 <div className="h-3 w-32 rounded bg-slate-100 dark:bg-slate-800" />
                 <div className="h-2.5 w-48 rounded bg-slate-100 dark:bg-slate-800" />
@@ -180,7 +180,7 @@ export function ClientList() {
                 onChange={setSearch}
                 placeholder="Search by name, email or country…"
             />
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-3 shrink-0">
                 {!isLoading && (
                 <p className="text-xs text-slate-400 whitespace-nowrap">
                     {filteredClients.length} of {clients.length} clients
@@ -236,7 +236,7 @@ export function ClientList() {
                         <TableCell className="py-3.5">
                             <div className="flex items-center gap-3">
                             <div className={cn(
-                                "w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0",
+                                "w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
                                 avatarColor(client.name)
                             )}>
                                 {getInitials(client.name)}
@@ -246,7 +246,7 @@ export function ClientList() {
                                 {client.name}
                                 </p>
                                 <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5 truncate">
-                                <Mail className="w-3 h-3 flex-shrink-0" />
+                                <Mail className="w-3 h-3 shrink-0" />
                                 {client.email}
                                 </p>
                             </div>
@@ -256,7 +256,7 @@ export function ClientList() {
                         {/* ── Contact ── */}
                         <TableCell className="py-3.5">
                             <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                            <Phone className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                            <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             {client.countryCode} {client.phone}
                             </span>
                         </TableCell>
@@ -264,7 +264,7 @@ export function ClientList() {
                         {/* ── Location ── */}
                         <TableCell className="py-3.5">
                             <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                            <Globe className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                            <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             {[client.city, client.country].filter(Boolean).join(", ")}
                             </span>
                         </TableCell>

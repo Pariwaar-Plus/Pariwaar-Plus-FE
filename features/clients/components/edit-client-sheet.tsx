@@ -141,12 +141,12 @@ export function EditClientSheet({ client, isOpen, onClose }: EditClientSheetProp
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-[500px] p-0 flex flex-col gap-0 overflow-hidden">
+      <SheetContent className="sm:max-w-125 p-0 flex flex-col gap-0 overflow-hidden">
 
         {/* ── Header ── */}
         <SheetHeader className="px-6 pt-6 pb-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
           <div className="flex items-start gap-4">
-            <div className="w-11 h-11 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center shrink-0">
               <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
                 {initials}
               </span>

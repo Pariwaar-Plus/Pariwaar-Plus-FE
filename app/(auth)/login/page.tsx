@@ -21,7 +21,6 @@ export default function LoginPage() {
         try {
             await login({ email, password });
             const user = useAuthStore.getState().user;
-            console.log(user)
             if (!user) throw new Error("User not found");
             toast.success(`Welcome back, ${user.name || 'User'}!`);
 

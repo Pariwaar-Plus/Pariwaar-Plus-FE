@@ -103,11 +103,9 @@ export const useAuthStore = create<AuthState>()(
 
             // ── HYDRATE (CORE AUTH BOOTSTRAP) ─────
             hydrate: async () => {
-                console.log("here")
                 const state = get();
                  if (hydratedOnce) return
 
-                console.log("bere")
                 // already initialized
                 if (state.isAuthChecked) return;
                 // prevent Strict Mode + concurrent calls
