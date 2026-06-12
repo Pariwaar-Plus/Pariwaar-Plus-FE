@@ -7,6 +7,8 @@ import axios, { AxiosError } from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
 
+type RegisterCareAgentResponse = ApiResponse<CareAgent>;
+
 // GET ALL
 export const getCareAgents = async (): Promise<CareAgent[]> => {
     try {
@@ -22,15 +24,15 @@ export const createCareAgent = async (
     data: SaharaStaffFormValues
 ): Promise<CareAgent> => {
 
-    try{
-        const response = await api.post<CareAgent>(
+    try {
+        const response = await api.post<RegisterCareAgentResponse>(
             `${API_URL}/care-agent/registerCareAgent`,
             data
         );
-        return response.data;
+        return response.data.data;
     } catch (error) {
         throw handleApiError(error, "Failed to register sahara staff");
-        
+
     }
 }
 
@@ -42,7 +44,7 @@ export const updateCareAgent = async (
     data: UpdateSaharaStaffFormValues
 ): Promise<ApiResponse<CareAgent>> => {
 
-    try{
+    try {
         const response = await api.patch<ApiResponse<CareAgent>>(
             `${API_URL}/care-agent/${id}`,
             data
@@ -59,7 +61,7 @@ export const updateCareAgent = async (
 export const deleteCareAgent = async (
     id: string
 ): Promise<{ success: true }> => {
-    try{
+    try {
         await api.delete(`${API_URL}/care-agent/${id}`);
         return { success: true };
     } catch (error) {
@@ -79,7 +81,7 @@ export const getCareAgentProfile = async (
         if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError<{ message: string }>;
             throw new Error(
-            axiosError.response?.data?.message || axiosError.message
+                axiosError.response?.data?.message || axiosError.message
             );
         }
         throw new Error("Failed to fetch care agent profile");

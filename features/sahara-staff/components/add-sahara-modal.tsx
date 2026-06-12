@@ -105,8 +105,8 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
       ward: "",
       tole: "",
       district: "",
-      longitude: undefined,
-      latitude: undefined,
+      longitude: 0,
+      latitude: 0,
       citizenshipNo: "",
       licenseNo: "",
     },
@@ -138,12 +138,12 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[520px] p-0 gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-130 p-0 gap-0 overflow-hidden">
 
         {/* ── Header ── */}
         <DialogHeader className="px-6 pt-6 pb-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center shrink-0">
               <UserPlus size={18} className="text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>

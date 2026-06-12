@@ -15,7 +15,7 @@ export const saharaStaffSchema = z.object({
     }),
 
     qualification: z.string().min(2, "Qualification is required"),
-    experience: z.coerce.number().min(0, "Experience cannot be negative"),
+    experience: z.number().min(0, "Experience cannot be negative"),
     specialization: optionalString,
 
     city: z.string().min(2, "City is required"),
