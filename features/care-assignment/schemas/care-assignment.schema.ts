@@ -3,8 +3,8 @@ import { z } from "zod";
 const optionalString = z.string().optional().or(z.literal(""));
 
 export const careAssignmentSchema = z.object({
-    careAgentId:    z.string().uuid("Invalid care agent"),
-    careReceiverId: z.string().uuid("Invalid care receiver"),
+    careAgentId:    z.uuid("Invalid care agent"),
+    careReceiverId: z.uuid("Invalid care receiver"),
     startDate:      z.string().refine((v) => !isNaN(Date.parse(v)), {
                     message: "Invalid start date",
                     }),
@@ -12,7 +12,7 @@ export const careAssignmentSchema = z.object({
                     (v) => !v || !isNaN(Date.parse(v)),
                     { message: "Invalid end date" }
                     ),
-    status:         z.enum(["ACTIVE", "COMPLETED", "CANCELLED", "ON_HOLD"])
+    status: z.enum(["ACTIVE", "COMPLETED", "CANCELLED", "ON_HOLD", "INACTIVE"])
                     .default("ACTIVE"),
     notes:          optionalString,
 });

@@ -5,24 +5,26 @@ export interface CareAgent {
     id: string;              // CareAgent Profile ID
     userId: string;          // Linked User ID
     employeeId: string;      // e.g., SAH-2026-001
-    
+
     // User Account Info (usually joined from User table)
-    name: string;
-    email: string;
-    
+    user: {
+        name: string;
+        email: string;
+    }
+
     // Professional Details
     status: CareAgentStatus;
     qualification: string;
     specialization?: string; // Changed to string (per Prisma) or keep string[] if you handle it as JSON
     experience: number;
     joinedDate: string;      // ISO Date String
-    
+
     // Personal & Contact
     phone: string;
     secondaryPhone: string;
     gender: Gender;
     dateOfBirth: string;     // ISO Date String
-    
+
     // Address Details
     city: string;
     ward: string;
@@ -104,12 +106,12 @@ export interface CareAgentProfile {
 
     // Computed
     stats: {
-    age: number | null;
-    joinedDaysAgo: number;
-    totalAssignments: number;
-    activeAssignments: number;
-    hasCoordinates: boolean;
-    hasDocuments: boolean;
+        age: number | null;
+        joinedDaysAgo: number;
+        totalAssignments: number;
+        activeAssignments: number;
+        hasCoordinates: boolean;
+        hasDocuments: boolean;
     };
 }
 

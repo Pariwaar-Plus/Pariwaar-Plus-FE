@@ -61,7 +61,7 @@ const ROUTES_BY_ROLE: Record<string, Route[]> = {
         {
             label: "Assignments",
             icon: ClipboardList,
-            href: "/dashboard/admin/assignments",
+            href: "/dashboard/admin/care-assignments",
             color: "text-orange-400",
             activeColor: "text-orange-300",
             activeBg: "bg-orange-500/10 border-orange-500/30",
@@ -193,7 +193,7 @@ export default function Sidebar({ className }: { className?: string }) {
     const initials = user.name
         ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
         : "?";
-
+    console.log(routes)
     return (
         <div className={cn(
             "flex flex-col h-full w-64 bg-[#0d1420] border-r border-white/6",

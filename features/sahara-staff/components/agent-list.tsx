@@ -67,10 +67,10 @@ function avatarColor(name: string) {
 
 function StatusBadge({ status }: { status: CareAgentStatus }) {
     const map: Record<CareAgentStatus, { label: string; className: string }> = {
-        AVAILABLE:  { label: "Available",  className: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800" },
-        ASSIGNED:   { label: "Assigned",   className: "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-800" },
-        ON_LEAVE:   { label: "On Leave",   className: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800" },
-        INACTIVE:   { label: "Inactive",   className: "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700" },
+        AVAILABLE: { label: "Available", className: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800" },
+        ASSIGNED: { label: "Assigned", className: "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/40 dark:text-sky-400 dark:border-sky-800" },
+        ON_LEAVE: { label: "On Leave", className: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800" },
+        INACTIVE: { label: "Inactive", className: "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700" },
     };
 
     const { label, className } = map[status] ?? map.INACTIVE;
@@ -90,7 +90,7 @@ function TableSkeleton() {
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-4 px-4 py-3.5 animate-pulse">
-                    <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex-shrink-0" />
+                    <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0" />
                     <div className="flex-1 space-y-1.5">
                         <div className="h-3 w-32 rounded bg-slate-100 dark:bg-slate-800" />
                         <div className="h-2.5 w-48 rounded bg-slate-100 dark:bg-slate-800" />
@@ -128,7 +128,7 @@ export function AgentList() {
     const queryClient = useQueryClient();
     const [selectedAgent, setSelectedAgent] = React.useState<CareAgent | null>(null);
     const [isEditOpen, setIsEditOpen] = React.useState(false);
-    const [isProfileOpen, setIsProfileOpen] = React.useState(false); 
+    const [isProfileOpen, setIsProfileOpen] = React.useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
     const [search, setSearch] = React.useState("");
 
@@ -173,8 +173,8 @@ export function AgentList() {
         const term = search.trim().toLowerCase();
         if (!term) return agents;
         return agents.filter((a) =>
-            (a.name ?? "").toLowerCase().includes(term) ||
-            (a.email ?? "").toLowerCase().includes(term) ||
+            (a.user.name ?? "").toLowerCase().includes(term) ||
+            (a.user.email ?? "").toLowerCase().includes(term) ||
             (a.city ?? "").toLowerCase().includes(term)
         );
     }, [agents, search]);
@@ -199,7 +199,7 @@ export function AgentList() {
                     placeholder="Search by name, email or city…"
                 />
                 {!isLoading && (
-                    <p className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">
+                    <p className="text-xs text-slate-400 whitespace-nowrap shrink-0">
                         {filteredAgents.length} of {agents.length} staff
                     </p>
                 )}
@@ -250,18 +250,18 @@ export function AgentList() {
                                         <TableCell className="py-3.5">
                                             <div className="flex items-center gap-3">
                                                 <div className={cn(
-                                                    "w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0",
-                                                    avatarColor(agent.name)
+                                                    "w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
+                                                    avatarColor(agent.user.name)
                                                 )}>
-                                                    {getInitials(agent.name)}
+                                                    {getInitials(agent.user.name)}
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
-                                                        {agent.name}
+                                                        {agent.user.name}
                                                     </p>
                                                     <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5 truncate">
-                                                        <Mail className="w-3 h-3 flex-shrink-0" />
-                                                        {agent.email}
+                                                        <Mail className="w-3 h-3 shrink-0" />
+                                                        {agent.user.email}
                                                     </p>
                                                 </div>
                                             </div>
@@ -270,7 +270,7 @@ export function AgentList() {
                                         {/* ── Contact ── */}
                                         <TableCell className="py-3.5">
                                             <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                                                <Phone className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                                                <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                                 {agent.phone}
                                             </span>
                                         </TableCell>
@@ -283,7 +283,7 @@ export function AgentList() {
                                         {/* ── Location ── */}
                                         <TableCell className="py-3.5">
                                             <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                                                <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                                                <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                                 {[agent.tole, agent.city].filter(Boolean).join(", ")}
                                             </span>
                                         </TableCell>
@@ -291,13 +291,13 @@ export function AgentList() {
                                         {/* ── Experience ── */}
                                         <TableCell className="py-3.5">
                                             <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                                                <Briefcase className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                                                <Briefcase className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                                 {agent.experience} yr{agent.experience !== 1 ? "s" : ""}
                                             </span>
                                         </TableCell>
 
                                         {/* ── Specialization ── */}
-                                        <TableCell className="py-3.5 max-w-[180px]">
+                                        <TableCell className="py-3.5 max-w-45">
                                             {agent.specialization ? (
                                                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                                                     {agent.specialization}
@@ -380,7 +380,7 @@ export function AgentList() {
                 onOpenChange={setIsDeleteOpen}
                 title="Delete Sahara Staff"
                 description="This will permanently remove"
-                itemName={selectedAgent?.name ?? ""}
+                itemName={selectedAgent?.user.name ?? ""}
                 loading={deleteMutation.isPending}
                 onConfirm={() =>
                     deleteMutation.mutate(selectedAgent!.id)

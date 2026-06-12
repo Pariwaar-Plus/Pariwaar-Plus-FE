@@ -10,12 +10,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
 // GET ALL
 export const getCareAgents = async (): Promise<CareAgent[]> => {
     try {
-        const response = await api.get<any[]>("/care-agent");
-        return response.data.map((agent) => ({
-            ...agent,
-            name: agent.user?.name,
-            email: agent.user?.email,
-        }));
+        const response = await api.get<CareAgent[]>("/care-agent");
+        return response.data
     } catch (error) {
         throw handleApiError(error, "Failed to get sahara staff");
     }

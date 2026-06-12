@@ -251,9 +251,9 @@ function ProfileContent({
             <div className="px-6 pt-6 pb-5 border-b bg-slate-50">
                 <div className="flex items-start gap-4">
                     <div className={cn(
-                                    "w-14 h-14 rounded-2xl flex items-center justify-center text-base font-bold shrink-0 border-2 border-white dark:border-slate-700 shadow-sm",
-                                    avatarColor(receiver.name)
-                                    )}>
+                        "w-14 h-14 rounded-2xl flex items-center justify-center text-base font-bold shrink-0 border-2 border-white dark:border-slate-700 shadow-sm",
+                        avatarColor(receiver.name)
+                    )}>
                         {getInitials(receiver.name)}
                     </div>
 
@@ -452,6 +452,25 @@ function ProfileContent({
                             />
                         </div>
                     </div>
+
+                    <div>
+                        <SectionLabel>
+                            Assigned Care Agents
+                        </SectionLabel>
+                        {receiver.assignments?.map((careAgent) => (
+
+                            <span
+                                className={cn(
+                                    "inline-flex items-center px-2 py-1 rounded-md border text-xs font-medium",
+                                    "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                )}
+                                key={careAgent.id}
+                            >
+                                {careAgent.careAgent?.user.name}
+                            </span>
+                        ))}
+
+                    </div>
                 </div>
             </div>
         </>
@@ -490,7 +509,6 @@ export function CareReceiverProfileModal({
         enabled:
             !!careReceiverId && open,
     });
-
     return (
         <Dialog
             open={open}
@@ -509,7 +527,6 @@ export function CareReceiverProfileModal({
                     }
                     className="absolute right-4 top-4 z-10"
                 >
-                    <X className="w-4 h-4" />
                 </button>
 
                 {isLoading && (
