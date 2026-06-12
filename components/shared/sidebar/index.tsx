@@ -69,7 +69,7 @@ const ROUTES_BY_ROLE: Record<string, Route[]> = {
         {
             label: "Settings",
             icon: Settings,
-            href: "/dashboard/admin/settings",
+            href: "/dashboard/profile",
             color: "text-slate-400",
             activeColor: "text-slate-200",
             activeBg: "bg-slate-500/10 border-slate-500/30",
@@ -77,17 +77,9 @@ const ROUTES_BY_ROLE: Record<string, Route[]> = {
     ],
     CARE_AGENT: [
         {
-            label: "My Assignments",
-            icon: ClipboardList,
-            href: "/dashboard/my-tasks",
-            color: "text-orange-400",
-            activeColor: "text-orange-300",
-            activeBg: "bg-orange-500/10 border-orange-500/30",
-        },
-        {
-            label: "Care Receivers",
+            label: "My Care Receivers",
             icon: HeartHandshake,
-            href: "/dashboard/patients",
+            href: "/dashboard/care-agent",
             color: "text-pink-400",
             activeColor: "text-pink-300",
             activeBg: "bg-pink-500/10 border-pink-500/30",
@@ -103,28 +95,20 @@ const ROUTES_BY_ROLE: Record<string, Route[]> = {
     ],
     CLIENT: [
         {
-            label: "Portal Home",
-            icon: LayoutDashboard,
-            href: "/dashboard/portal",
+            label: "My Family",
+            icon: HeartHandshake,
+            href: "/dashboard/client",
             color: "text-emerald-400",
             activeColor: "text-emerald-300",
             activeBg: "bg-emerald-500/10 border-emerald-500/30",
         },
         {
-            label: "My Care Plan",
-            icon: ClipboardList,
-            href: "/dashboard/plan",
-            color: "text-sky-400",
-            activeColor: "text-sky-300",
-            activeBg: "bg-sky-500/10 border-sky-500/30",
-        },
-        {
-            label: "Billing",
-            icon: CreditCard,
-            href: "/dashboard/billing",
-            color: "text-violet-400",
-            activeColor: "text-violet-300",
-            activeBg: "bg-violet-500/10 border-violet-500/30",
+            label: "Profile",
+            icon: User,
+            href: "/dashboard/profile",
+            color: "text-slate-400",
+            activeColor: "text-slate-200",
+            activeBg: "bg-slate-500/10 border-slate-500/30",
         },
     ],
 };
@@ -193,7 +177,7 @@ export default function Sidebar({ className }: { className?: string }) {
     const initials = user.name
         ? user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
         : "?";
-    console.log(routes)
+
     return (
         <div className={cn(
             "flex flex-col h-full w-64 bg-[#0d1420] border-r border-white/6",
@@ -202,7 +186,7 @@ export default function Sidebar({ className }: { className?: string }) {
 
             {/* ── Logo ── */}
             <div className="px-5 pt-6 pb-5 border-b border-white/6">
-                <Link href="/dashboard/admin" className="flex items-center gap-2.5 group">
+                <Link href="/dashboard" className="flex items-center gap-2.5 group">
                     <div className="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center shrink-0 group-hover:bg-emerald-600/30 transition-colors">
                         {/* Heart + plus icon */}
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

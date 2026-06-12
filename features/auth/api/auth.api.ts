@@ -46,3 +46,15 @@ export const refreshToken = async (): Promise<{ accessToken: string }> => {
 
     return res.data;
 };
+
+/**
+ * CHANGE PASSWORD
+ * Used from the profile page (e.g. to replace a temporary password).
+ * Backend reads the acting user from the JWT (authMiddleware).
+ */
+export const changePassword = async (data: {
+    currentPassword: string;
+    newPassword: string;
+}): Promise<void> => {
+    await api.post("/auth/change-password", data);
+};

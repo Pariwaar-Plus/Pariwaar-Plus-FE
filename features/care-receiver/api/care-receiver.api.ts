@@ -33,10 +33,16 @@ const delay = (ms: number) =>
 
 //    READ
 export const getCareReceivers = async (): Promise<CareReceiver[]> => {
-    await delay(600);
-    const response = await api.get('/care-receiver/');
-    return response.data
+
+
+    try {
+        const response = await api.get<CareReceiver[]>("/care-receiver/");
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error, "Failed to load your care receivers");
+    }
 };
+
 
 export const getCareReceiverProfile = async (id: string): Promise<CareReceiver> => {
     try {
@@ -61,7 +67,7 @@ export const createCareReceiver = async (
 ): Promise<CareReceiver> => {
 
     try {
-        const response = await api.patch<CareReceiver>(
+        const response = await api.post<CareReceiver>(
             "/care-receiver",
             data
         );
