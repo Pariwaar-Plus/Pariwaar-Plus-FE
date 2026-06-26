@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { format } from "date-fns";
 import {
     Table,
     TableBody,
@@ -10,9 +8,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { format } from "date-fns";
+import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 import {
     DropdownMenu,
@@ -49,9 +48,8 @@ import { CareReceiver } from "../types/care-receiver.type";
 import { DeleteConfirmDialog } from "@/components/shared/dialogs/delete-confirm-dialogue.component";
 import { SearchFilter } from "@/components/shared/filter/search-filter.component";
 import { EditCareReceiverSheet } from "../components/edit-care-receiver-sheet";
-import { CareReceiverProfileModal } from "./care-receiver-profile-modal";
 import { ManageCareAgentsModal } from "./assign-care-agent-modal";
-import { CareAssignment } from "@/features/care-assignment/types/care-assignment.type";
+import { CareReceiverProfileModal } from "./care-receiver-profile-modal";
 
 export function CareReceiverList() {
     const queryClient = useQueryClient();

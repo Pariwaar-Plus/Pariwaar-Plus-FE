@@ -38,12 +38,16 @@ interface AssignCareAgentModalProps {
   careReceiverId: string;
 }
 
+type VisitFrequency = "DAILY" | "WEEKLY" | "BIWEEKLY" | "MONTHLY" | "ON_DEMAND";
+
+
+
 type AssignmentFormValues = {
   careAgentId: string;
-  status: "ACTIVE" | "INACTIVE" | "COMPLETED" | "INACTIVE";
   startDate: string;
   endDate?: string;
   notes?: string;
+  frequency: VisitFrequency
 };
 
 export function ManageCareAgentsModal({
@@ -78,10 +82,11 @@ export function ManageCareAgentsModal({
     queryFn: getCareAgents,
   });
 
+
   const form = useForm<AssignmentFormValues>({
     defaultValues: {
       careAgentId: "",
-      status: "ACTIVE",
+      frequency: "" as VisitFrequency,
       startDate: "",
       endDate: "",
       notes: "",
@@ -132,8 +137,8 @@ export function ManageCareAgentsModal({
   // ---------------- SUBMIT ----------------
 
   const onSubmit = (values: AssignmentFormValues) => {
-    if (!values.careAgentId || !values.startDate) {
-      toast.error("Care agent and start date are required");
+    if (!values.careAgentId || !values.startDate || !values.frequency) {
+      toast.error("Care agent, visit frequency and start date are required");
       return;
     }
 
@@ -157,6 +162,10 @@ export function ManageCareAgentsModal({
         a.user.name.toLowerCase().includes(search.toLowerCase())
       );
   }, [allAgents, assignedIds, search]);
+
+  const visitFrequency = {
+    DAILY: "DAILY", WEEKLY: "WEEKLY", BIWEEKLY: "BIWEEKLY", MONTHLY: "MONTHLY", ON_DEMAND: "ON_DEMAND"
+  }
 
 
 
@@ -188,9 +197,9 @@ export function ManageCareAgentsModal({
                   >
                     <div>
                       <p className="font-medium">{assignment.careAgent?.user.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      {/* <p className="text-xs text-muted-foreground">
                         {format(assignment.startDate, "yyyy/MM/dd")}-{assignment.endDate ? format(assignment.endDate, "yyyy/MM/dd") : ""}
-                      </p>
+                      </p> */}
                     </div>
 
 
@@ -231,11 +240,12 @@ export function ManageCareAgentsModal({
               {/* Status */}
               <select
                 className="w-full border rounded p-2"
-                {...register("status")}
+                {...register("frequency")}
               >
-                <option value="ACTIVE">ACTIVE</option>
-                <option value="INACTIVE">INACTIVE</option>
-                <option value="COMPLETED">COMPLETED</option>
+                <option value="">Select Visit Frequency</option>
+                {Object.entries(visitFrequency).map(([key, value]) =>
+                  <option value={value}>{key}</option>
+                )}
               </select>
 
               {/* Start Date */}
