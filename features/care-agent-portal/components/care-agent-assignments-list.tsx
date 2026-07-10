@@ -8,33 +8,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar,
-  Check,
   ChevronDown,
   ClipboardList,
-  Clock,
   Eye,
   MoreHorizontal,
   Plus,
-  Repeat,
-  X as XIcon,
+  Repeat
 } from "lucide-react";
 import * as React from "react";
 
 import { SearchFilter } from "@/components/shared/filter/search-filter.component";
-import { getMyAssignments } from "@/features/care-assignment/api/care-assignment.api";
+import { VisitChip } from "@/components/shared/visit-log/visit-card";
 import {
   AssignmentStatus,
   CareAssignment,
   VisitFrequency,
 } from "@/features/care-assignment/types/care-assignment.type";
-import { VisitStatus } from "@/features/visit-log/types/visit-log.type";
-import { LogVisitModal } from "@/features/visit-log/components/log-visit-modal";
-import { VisitHistoryModal } from "@/features/visit-log/components/visit-history-modal";
 import { CareReceiverProfileModal } from "@/features/care-receiver/components/care-receiver-profile-modal";
+import { LogVisitModal } from "@/features/visit-log/components/log-visit-modal";
 import { VisitDetailView } from "@/features/visit-log/components/single-visit-log-modal";
+import { VisitHistoryModal } from "@/features/visit-log/components/visit-history-modal";
 
 /* ─────────────────────────────────────────────
    Badges
@@ -97,70 +92,6 @@ function FrequencyBadge({ frequency }: { frequency: VisitFrequency }) {
   );
 }
 
-function VisitChip({
-  visit,
-  onClickHandleVisitCard,
-}: {
-  visit: { scheduledAt: string; status: VisitStatus };
-  onClickHandleVisitCard(): void;
-}) {
-  const date = new Date(visit.scheduledAt).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-
-  const config: Record<
-    VisitStatus,
-    { icon: React.ElementType; className: string; label?: string }
-  > = {
-    COMPLETED: {
-      icon: Check,
-      className:
-        "border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 bg-green-200",
-    },
-    MISSED: {
-      icon: XIcon,
-      className:
-        "border-slate-200 dark:border-slate-700 text-red-500 dark:text-red-400 bg-red-200",
-      label: "missed",
-    },
-    SCHEDULED: {
-      icon: Clock,
-      className:
-        "border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500",
-      label: "scheduled",
-    },
-    CANCELLED: {
-      icon: XIcon,
-      className: "border-slate-200 dark:border-slate-700 text-slate-400",
-      label: "cancelled",
-    },
-  };
-
-  const {
-    icon: Icon,
-    className,
-    label,
-  } = config[visit.status] ?? config.SCHEDULED;
-
-  return (
-    <button
-      onClick={onClickHandleVisitCard}
-      className={cn(
-        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border  dark:bg-slate-900 text-xs cursor-pointer",
-        className,
-      )}
-    >
-      <Icon className="w-3.5 h-3.5" />
-      <span className="text-slate-700 dark:text-slate-300 font-medium">
-        {date}
-      </span>
-      {label && (
-        <span className="text-slate-400 dark:text-slate-500">{label}</span>
-      )}
-    </button>
-  );
-}
 
 /* ─────────────────────────────────────────────
    Skeleton / Empty
@@ -452,7 +383,6 @@ export function CareAgentAssignmentList({ assignments, isLoading, isError }: { a
       />
       <VisitHistoryModal
         careReceiverId={selected?.careReceiverId ?? null}
-        visitId={visitId}
         receiverName={selected?.careReceiver?.name}
         open={historyOpen}
         onOpenChange={setHistoryOpen}

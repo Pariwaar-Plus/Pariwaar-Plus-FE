@@ -14,6 +14,7 @@ import {
     Scale,
     StickyNote,
     CalendarClock,
+    Info,
 } from "lucide-react";
 
 import {
@@ -28,6 +29,7 @@ import { cn } from "@/lib/utils";
 
 import { getVisitHistory } from "../api/visit-log.api";
 import { VisitLog, VisitStatus } from "../types/visit-log.type";
+import { selectUser, useAuthStore } from "@/features/auth/store/auth.store";
 
 const STATUS_STYLE: Record<VisitStatus, string> = {
     COMPLETED: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -80,6 +82,8 @@ function bpValue(v: VisitLog) {
 }
 
 export function VisitCard({ visit }: { visit: VisitLog }) {
+    const user = useAuthStore(selectUser);
+    const role = user?.role as string | undefined;
     const when = visit.checkInAt ?? visit.scheduledAt;
     const upto = visit.checkOutAt
     return (
@@ -89,12 +93,23 @@ export function VisitCard({ visit }: { visit: VisitLog }) {
                     <CalendarClock className="h-4 w-4 text-slate-400" />
                     {when ? format(new Date(when), "PPP p") : "—"} {upto ? "to" : "-"} {upto ? format(new Date(upto), "HH:mm") : ""}
                 </div>
-                <Badge
-                    variant="outline"
-                    className={cn("border text-xs", STATUS_STYLE[visit.status])}
-                >
-                    {visit.status}
-                </Badge>
+                <div className="flex items-center justify-between gap-2">
+
+                    <Badge
+                        variant="outline"
+                        className={cn("border text-xs", STATUS_STYLE[visit.status])}
+                    >
+                        {visit.status}
+                    </Badge>
+                    {role !== "CLIENT" && <div className="group relative inline-block cursor-pointer">
+                        <Info className="h-3 w-3" />
+
+                        <div className="absolute right-full top-1/2 mr-2 hidden -translate-y-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white group-hover:block">
+                            {role === "ADMIN" ? "Go to visit logs tab to edit" : "Please ask admin for editing"}
+                        </div>
+                    </div>}
+
+                </div>
             </div>
 
             {visit.status === "CANCELLED" || visit.status === "MISSED" ? (
@@ -144,7 +159,6 @@ export function VisitCard({ visit }: { visit: VisitLog }) {
 
 interface VisitHistoryModalProps {
     careReceiverId: string | null;
-    visitId?: string | null;
     receiverName?: string;
     open: boolean;
     onOpenChange: (open: boolean) => void;

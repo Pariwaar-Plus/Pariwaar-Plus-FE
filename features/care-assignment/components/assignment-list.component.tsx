@@ -1,25 +1,27 @@
 "use client";
 
-import * as React from "react";
-import {
-  Repeat, Check, X as XIcon, Clock,
-  MoreHorizontal, Eye, Pencil, Ban,
-  ChevronDown, ClipboardList, Calendar,
-} from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Ban,
+  Calendar,
+  ClipboardList,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Repeat
+} from "lucide-react";
+import * as React from "react";
 
 
 import { SearchFilter } from "@/components/shared/filter/search-filter.component";
-import { DeleteConfirmDialog } from "@/components/shared/dialogs/delete-confirm-dialogue.component";
-import { EditAssignmentSheet } from "./edit-assignment-sheet";
-import { AssignmentStatus, CareAssignment, VisitFrequency, VisitStatus } from "../types/care-assignment.type";
+import { VisitHistoryModal } from "@/features/visit-log/components/visit-history-modal";
 import { getMyAssignments } from "../api/care-assignment.api";
+import { AssignmentStatus, CareAssignment, VisitFrequency } from "../types/care-assignment.type";
 // import { VisitLogModal } from "./visit-log-modal";
 
 /* ─────────────────────────────────────────────
@@ -59,31 +61,6 @@ function FrequencyBadge({ frequency }: { frequency: VisitFrequency }) {
   );
 }
 
-function VisitChip({ visit }: { visit: { scheduledAt: string; status: VisitStatus } }) {
-  const date = new Date(visit.scheduledAt).toLocaleDateString("en-US", {
-    month: "short", day: "numeric",
-  });
-
-  const config: Record<VisitStatus, { icon: React.ElementType; className: string; label?: string }> = {
-    COMPLETED: { icon: Check, className: "border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 bg-green-200" },
-    MISSED: { icon: XIcon, className: "border-slate-200 dark:border-slate-700 text-red-500 dark:text-red-400 bg-red-200", label: "missed" },
-    SCHEDULED: { icon: Clock, className: "border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500", label: "scheduled" },
-    CANCELLED: { icon: XIcon, className: "border-slate-200 dark:border-slate-700 text-slate-400", label: "cancelled" },
-  };
-
-  const { icon: Icon, className, label } = config[visit.status] ?? config.SCHEDULED;
-
-  return (
-    <button className={cn(
-      "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border  dark:bg-slate-900 text-xs cursor-pointer",
-      className
-    )}>
-      <Icon className="w-3.5 h-3.5" />
-      <span className="text-slate-700 dark:text-slate-300 font-medium">{date}</span>
-      {label && <span className="text-slate-400 dark:text-slate-500">{label}</span>}
-    </button>
-  );
-}
 
 /* ─────────────────────────────────────────────
    Skeleton / Empty
@@ -129,6 +106,7 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
 ───────────────────────────────────────────── */
 
 export function AssignmentList() {
+ 
   const queryClient = useQueryClient();
   const [search, setSearch] = React.useState("");
   const [expandedId, setExpandedId] = React.useState<string | null>(null);
@@ -137,6 +115,8 @@ export function AssignmentList() {
   const [isEditOpen, setIsEditOpen] = React.useState(false);
   const [isCancelOpen, setIsCancelOpen] = React.useState(false);
   const [isVisitLogOpen, setIsVisitLogOpen] = React.useState(false);
+  const [detailsOpen, setDetailsOpen] = React.useState(false);
+  const [visitId, setVisitId] = React.useState<string | null>(null);
 
   const { data: assignments = [], isLoading, isError } = useQuery({
     queryKey: ["care-assignments"],
@@ -168,6 +148,12 @@ export function AssignmentList() {
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
+
+  const onClickDate = (id: string) => {
+    setVisitId(id);
+    setDetailsOpen(true);
+  };
+
 
   const handleCloseEdit = () => {
     setIsEditOpen(false);
@@ -270,10 +256,10 @@ export function AssignmentList() {
 
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                      <ChevronDown className={cn(
+                      {/* <ChevronDown className={cn(
                         "w-4 h-4 text-slate-400 transition-transform",
                         isExpanded && "rotate-180"
-                      )} />
+                      )} /> */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-80 group-hover:opacity-100 focus:opacity-100 transition-all outline-none">
@@ -319,24 +305,7 @@ export function AssignmentList() {
                   </div>
 
                   {/* Expanded — recent visits strip */}
-                  {isExpanded && (
-                    <div className="px-4 pb-4 pl-18 bg-slate-50/60 dark:bg-slate-800/30 border-t border-dashed border-slate-200 dark:border-slate-700">
-                      {/* <div className="flex items-center gap-2 flex-wrap"> */}
-                      <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 pt-3 mb-2.5">
-                        Recent Visits
-                      </p>
-                      <div className="flex gap-4">
-
-                        {a.schedule.recentVisits.length === 0 ? (
-                          <p className="text-xs text-slate-400 italic">No visits logged yet</p>
-                        ) : (
-                          a.schedule.recentVisits.map((v, index) => <VisitChip key={index} visit={{ scheduledAt: v.scheduledAt, status: v.status }} />)
-                        )}
-                      </div>
-                      {/* </div> */}
-                    </div>
-
-                  )}
+                
                 </div>
               );
             })}
@@ -352,13 +321,17 @@ export function AssignmentList() {
       /> */}
 
       {/* ── Visit log modal (placeholder until VisitLog CRUD is ready) ── */}
-      {/* <VisitLogModal
-        assignment={selected}
+      <VisitHistoryModal
+        careReceiverId={selected?.careReceiverId ?? null}
+        receiverName={selected?.careReceiver?.name}
         open={isVisitLogOpen}
-        onOpenChange={(open) => {
-          setIsVisitLogOpen(open);
-          if (!open) setSelected(null);
-        }}
+        onOpenChange={setIsVisitLogOpen}
+      />
+
+      {/* <VisitDetailView
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+        visitId={visitId}
       /> */}
 
       {/* ── Cancel confirm ── */}

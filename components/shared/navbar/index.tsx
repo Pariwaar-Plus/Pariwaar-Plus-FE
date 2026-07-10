@@ -55,8 +55,8 @@ export default function Navbar() {
     const subText = role === "ADMIN"
         ? adminMsg
         : role === "CARE_AGENT"
-        ? "Your assignments are up to date."
-        : "Welcome back to Pariwaar+";
+            ? "Your assignments are up to date."
+            : "Welcome back to Pariwaar+";
 
     return (
         <nav className="sticky top-0 z-50 h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-[#0f1623]/90 backdrop-blur-md">
@@ -65,7 +65,7 @@ export default function Navbar() {
                 {/* ── LEFT: Greeting ── */}
                 <div className="flex items-center gap-3 min-w-0">
                     {/* Vertical accent bar */}
-                    <div className="hidden sm:block w-[3px] h-8 rounded-full bg-gradient-to-b from-emerald-400 to-emerald-700 flex-shrink-0" />
+                    <div className="hidden sm:block w-0.75 h-8 rounded-full bg-linear-to-b from-emerald-400 to-emerald-700 shrink-0" />
 
                     <div className="min-w-0">
                         <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-tight truncate">
@@ -76,7 +76,7 @@ export default function Navbar() {
                         </p>
                         <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-tight truncate flex items-center gap-1 mt-0.5">
                             {role === "ADMIN" && (
-                                <Activity className="w-3 h-3 text-emerald-500 flex-shrink-0" />
+                                <Activity className="w-3 h-3 text-emerald-500 shrink-0" />
                             )}
                             {subText}
                         </p>
@@ -84,7 +84,7 @@ export default function Navbar() {
                 </div>
 
                 {/* ── RIGHT: Role badge + notifications + user ── */}
-                <div className="flex items-center gap-2.5 flex-shrink-0">
+                <div className="flex items-center gap-2.5 shrink-0">
 
                     {/* Role badge */}
                     {roleConfig && (
