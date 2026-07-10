@@ -84,8 +84,12 @@ export type UpdateVisitLogFormValues = z.infer<typeof updateVisitLogSchema>;
 // so empty vital fields stay undefined instead of becoming 0.
 const blankToUndef = (v: unknown) =>
     v === "" || v === null || v === undefined ? undefined : v;
-const formInt = z.preprocess(blankToUndef, z.coerce.number().int().optional());
-const formFloat = z.preprocess(blankToUndef, z.coerce.number().optional());
+// const formInt = z.preprocess(blankToUndef, z.coerce.number().int().optional());
+// const formFloat = z.preprocess(blankToUndef, z.coerce.number().optional());
+
+
+const formInt = z.number().int().optional();
+const formFloat = z.number().optional();
 
 export const logVisitFormSchema = z
     .object({
@@ -97,8 +101,7 @@ export const logVisitFormSchema = z
         checkOutAt: optionalString,
 
         status: z
-            .enum(["SCHEDULED", "COMPLETED", "MISSED", "CANCELLED"])
-            .default("COMPLETED"),
+            .enum(["SCHEDULED", "COMPLETED", "MISSED", "CANCELLED"]),
         cancellationReason: optionalString,
 
         // Vitals
@@ -112,10 +115,7 @@ export const logVisitFormSchema = z
         respiratoryRate: formInt,
 
         // Pain & wellbeing
-        painLevel: z.preprocess(
-            blankToUndef,
-            z.coerce.number().int().min(0).max(10).optional()
-        ),
+        painLevel: z.number().int().min(0).max(10).optional(),
         mood: z
             .enum(["HAPPY", "CALM", "ANXIOUS", "CONFUSED", "AGITATED", "DEPRESSED"])
             .optional(),

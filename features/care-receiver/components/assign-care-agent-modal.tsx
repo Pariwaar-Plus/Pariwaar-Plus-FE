@@ -19,6 +19,7 @@ import { getCareAgents } from "@/features/sahara-staff/api/care-agent.api";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { CareAssignmentFormValues } from "@/features/care-assignment/schemas/care-assignment.schema";
 
 // ----------------------
 // Types
@@ -42,13 +43,13 @@ type VisitFrequency = "DAILY" | "WEEKLY" | "BIWEEKLY" | "MONTHLY" | "ON_DEMAND";
 
 
 
-type AssignmentFormValues = {
-  careAgentId: string;
-  startDate: string;
-  endDate?: string;
-  notes?: string;
-  frequency: VisitFrequency
-};
+// type AssignmentFormValues = {
+//   careAgentId: string;
+//   startDate: string;
+//   endDate?: string;
+//   notes?: string;
+//   frequency: VisitFrequency
+// };
 
 export function ManageCareAgentsModal({
   isOpen,
@@ -83,13 +84,14 @@ export function ManageCareAgentsModal({
   });
 
 
-  const form = useForm<AssignmentFormValues>({
+  const form = useForm<CareAssignmentFormValues>({
     defaultValues: {
       careAgentId: "",
       frequency: "" as VisitFrequency,
       startDate: "",
       endDate: "",
       notes: "",
+      careReceiverId
     },
   });
 
@@ -136,16 +138,13 @@ export function ManageCareAgentsModal({
 
   // ---------------- SUBMIT ----------------
 
-  const onSubmit = (values: AssignmentFormValues) => {
+  const onSubmit = (values: CareAssignmentFormValues) => {
     if (!values.careAgentId || !values.startDate || !values.frequency) {
       toast.error("Care agent, visit frequency and start date are required");
       return;
     }
 
-    mutation.mutate({
-      careReceiverId,
-      ...values,
-    });
+    mutation.mutate(values);
 
   };
 

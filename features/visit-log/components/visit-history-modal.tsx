@@ -79,14 +79,15 @@ function bpValue(v: VisitLog) {
     return `${v.bloodPressureSystolic ?? "–"}/${v.bloodPressureDiastolic ?? "–"}`;
 }
 
-function VisitCard({ visit }: { visit: VisitLog }) {
+export function VisitCard({ visit }: { visit: VisitLog }) {
     const when = visit.checkInAt ?? visit.scheduledAt;
+    const upto = visit.checkOutAt
     return (
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                     <CalendarClock className="h-4 w-4 text-slate-400" />
-                    {when ? format(new Date(when), "PPP p") : "—"}
+                    {when ? format(new Date(when), "PPP p") : "—"} {upto ? "to" : "-"} {upto ? format(new Date(upto), "HH:mm") : ""}
                 </div>
                 <Badge
                     variant="outline"
@@ -120,29 +121,30 @@ function VisitCard({ visit }: { visit: VisitLog }) {
                 visit.medicationsSkipped ||
                 visit.symptoms ||
                 visit.agentNotes) && (
-                <div className="space-y-1.5 border-t border-slate-100 pt-3">
-                    {visit.medicationsGiven && (
-                        <div className="flex items-start gap-2 text-sm">
-                            <Pill className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                            <span className="text-slate-700">{visit.medicationsGiven}</span>
-                        </div>
-                    )}
-                    <NoteBlock label="Skipped meds" value={visit.medicationsSkipped} />
-                    <NoteBlock label="Symptoms" value={visit.symptoms} />
-                    {visit.agentNotes && (
-                        <div className="flex items-start gap-2 text-sm">
-                            <StickyNote className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" />
-                            <span className="text-slate-700">{visit.agentNotes}</span>
-                        </div>
-                    )}
-                </div>
-            )}
+                    <div className="space-y-1.5 border-t border-slate-100 pt-3">
+                        {visit.medicationsGiven && (
+                            <div className="flex items-start gap-2 text-sm">
+                                <Pill className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                                <span className="text-slate-700">{visit.medicationsGiven}</span>
+                            </div>
+                        )}
+                        <NoteBlock label="Skipped meds" value={visit.medicationsSkipped} />
+                        <NoteBlock label="Symptoms" value={visit.symptoms} />
+                        {visit.agentNotes && (
+                            <div className="flex items-start gap-2 text-sm">
+                                <StickyNote className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" />
+                                <span className="text-slate-700">{visit.agentNotes}</span>
+                            </div>
+                        )}
+                    </div>
+                )}
         </div>
     );
 }
 
 interface VisitHistoryModalProps {
     careReceiverId: string | null;
+    visitId?: string | null;
     receiverName?: string;
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -154,6 +156,7 @@ export function VisitHistoryModal({
     open,
     onOpenChange,
 }: VisitHistoryModalProps) {
+
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ["visit-history", careReceiverId],
         queryFn: () => getVisitHistory(careReceiverId!),

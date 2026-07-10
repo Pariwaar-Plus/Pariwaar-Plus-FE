@@ -1,42 +1,80 @@
 "use client";
 
-import * as React from "react";
 import {
-  Repeat, Check, X as XIcon, Clock,
-  MoreHorizontal, Eye, Pencil, Ban,
-  ChevronDown, ClipboardList, Calendar,
-} from "lucide-react";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Calendar,
+  Check,
+  ChevronDown,
+  ClipboardList,
+  Clock,
+  Eye,
+  MoreHorizontal,
+  Plus,
+  Repeat,
+  X as XIcon,
+} from "lucide-react";
+import * as React from "react";
 
 import { SearchFilter } from "@/components/shared/filter/search-filter.component";
-import { DeleteConfirmDialog } from "@/components/shared/dialogs/delete-confirm-dialogue.component";
-import { EditAssignmentSheet } from "./edit-assignment-sheet";
-import { AssignmentStatus, CareAssignment, VisitFrequency, VisitStatus } from "../types/care-assignment.type";
-import { getMyAssignments } from "../api/care-assignment.api";
-// import { VisitLogModal } from "./visit-log-modal";
+import { getMyAssignments } from "@/features/care-assignment/api/care-assignment.api";
+import {
+  AssignmentStatus,
+  CareAssignment,
+  VisitFrequency,
+} from "@/features/care-assignment/types/care-assignment.type";
+import { VisitStatus } from "@/features/visit-log/types/visit-log.type";
+import { LogVisitModal } from "@/features/visit-log/components/log-visit-modal";
+import { VisitHistoryModal } from "@/features/visit-log/components/visit-history-modal";
+import { CareReceiverProfileModal } from "@/features/care-receiver/components/care-receiver-profile-modal";
+import { VisitDetailView } from "@/features/visit-log/components/single-visit-log-modal";
 
 /* ─────────────────────────────────────────────
    Badges
 ───────────────────────────────────────────── */
 
-const STATUS_MAP: Record<AssignmentStatus, { label: string; className: string }> = {
-  ACTIVE: { label: "Active", className: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800" },
-  ON_HOLD: { label: "On Hold", className: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800" },
-  COMPLETED: { label: "Completed", className: "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700" },
-  CANCELLED: { label: "Cancelled", className: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800" },
+const STATUS_MAP: Record<
+  AssignmentStatus,
+  { label: string; className: string }
+> = {
+  ACTIVE: {
+    label: "Active",
+    className:
+      "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800",
+  },
+  ON_HOLD: {
+    label: "On Hold",
+    className:
+      "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800",
+  },
+  COMPLETED: {
+    label: "Completed",
+    className:
+      "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    className:
+      "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800",
+  },
 };
 
 function StatusBadge({ status }: { status: AssignmentStatus }) {
   const { label, className } = STATUS_MAP[status] ?? STATUS_MAP.ACTIVE;
   return (
-    <span className={cn("inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border", className)}>
+    <span
+      className={cn(
+        "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border",
+        className,
+      )}
+    >
       {label}
     </span>
   );
@@ -59,28 +97,67 @@ function FrequencyBadge({ frequency }: { frequency: VisitFrequency }) {
   );
 }
 
-function VisitChip({ visit }: { visit: { scheduledAt: string; status: VisitStatus } }) {
+function VisitChip({
+  visit,
+  onClickHandleVisitCard,
+}: {
+  visit: { scheduledAt: string; status: VisitStatus };
+  onClickHandleVisitCard(): void;
+}) {
   const date = new Date(visit.scheduledAt).toLocaleDateString("en-US", {
-    month: "short", day: "numeric",
+    month: "short",
+    day: "numeric",
   });
 
-  const config: Record<VisitStatus, { icon: React.ElementType; className: string; label?: string }> = {
-    COMPLETED: { icon: Check, className: "border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 bg-green-200" },
-    MISSED: { icon: XIcon, className: "border-slate-200 dark:border-slate-700 text-red-500 dark:text-red-400 bg-red-200", label: "missed" },
-    SCHEDULED: { icon: Clock, className: "border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500", label: "scheduled" },
-    CANCELLED: { icon: XIcon, className: "border-slate-200 dark:border-slate-700 text-slate-400", label: "cancelled" },
+  const config: Record<
+    VisitStatus,
+    { icon: React.ElementType; className: string; label?: string }
+  > = {
+    COMPLETED: {
+      icon: Check,
+      className:
+        "border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 bg-green-200",
+    },
+    MISSED: {
+      icon: XIcon,
+      className:
+        "border-slate-200 dark:border-slate-700 text-red-500 dark:text-red-400 bg-red-200",
+      label: "missed",
+    },
+    SCHEDULED: {
+      icon: Clock,
+      className:
+        "border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500",
+      label: "scheduled",
+    },
+    CANCELLED: {
+      icon: XIcon,
+      className: "border-slate-200 dark:border-slate-700 text-slate-400",
+      label: "cancelled",
+    },
   };
 
-  const { icon: Icon, className, label } = config[visit.status] ?? config.SCHEDULED;
+  const {
+    icon: Icon,
+    className,
+    label,
+  } = config[visit.status] ?? config.SCHEDULED;
 
   return (
-    <button className={cn(
-      "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border  dark:bg-slate-900 text-xs cursor-pointer",
-      className
-    )}>
+    <button
+      onClick={onClickHandleVisitCard}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border  dark:bg-slate-900 text-xs cursor-pointer",
+        className,
+      )}
+    >
       <Icon className="w-3.5 h-3.5" />
-      <span className="text-slate-700 dark:text-slate-300 font-medium">{date}</span>
-      {label && <span className="text-slate-400 dark:text-slate-500">{label}</span>}
+      <span className="text-slate-700 dark:text-slate-300 font-medium">
+        {date}
+      </span>
+      {label && (
+        <span className="text-slate-400 dark:text-slate-500">{label}</span>
+      )}
     </button>
   );
 }
@@ -93,7 +170,10 @@ function ListSkeleton() {
   return (
     <div className="divide-y divide-slate-100 dark:divide-slate-800">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-4 py-3.5 animate-pulse">
+        <div
+          key={i}
+          className="flex items-center gap-4 px-4 py-3.5 animate-pulse"
+        >
           <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0" />
           <div className="flex-1 space-y-1.5">
             <div className="h-3 w-32 rounded bg-slate-100 dark:bg-slate-800" />
@@ -118,7 +198,9 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
         {hasSearch ? "No assignments match your search" : "No assignments yet"}
       </p>
       <p className="text-xs text-slate-400 mt-1">
-        {hasSearch ? "Try a different agent or receiver name." : "Assign a care agent from a care receiver's profile."}
+        {hasSearch
+          ? "Try a different agent or receiver name."
+          : "Assign a care agent from a care receiver's profile."}
       </p>
     </div>
   );
@@ -128,52 +210,44 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
    Main component
 ───────────────────────────────────────────── */
 
-export function AssignmentList() {
-  const queryClient = useQueryClient();
+export function CareAgentAssignmentList({ assignments, isLoading, isError }: { assignments: CareAssignment[], isLoading: boolean, isError: any }) {
   const [search, setSearch] = React.useState("");
   const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
   const [selected, setSelected] = React.useState<CareAssignment | null>(null);
-  const [isEditOpen, setIsEditOpen] = React.useState(false);
-  const [isCancelOpen, setIsCancelOpen] = React.useState(false);
-  const [isVisitLogOpen, setIsVisitLogOpen] = React.useState(false);
 
-  const { data: assignments = [], isLoading, isError } = useQuery({
-    queryKey: ["care-assignments"],
-    queryFn: getMyAssignments,
-  });
+  const [isProfileOpen, setIsProfileOpen] = React.useState(false);
 
-  // const cancelMutation = useMutation({
-  //   mutationFn: cancelAssignment,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["assignments"] });
-  //     toast.success("Assignment cancelled");
-  //     setIsCancelOpen(false);
-  //   },
-  //   onError: (error: Error) => {
-  //     toast.error(error.message || "Failed to cancel assignment");
-  //   },
-  // });
+  const [logOpen, setLogOpen] = React.useState(false);
+  const [historyOpen, setHistoryOpen] = React.useState(false);
+  const [detailsOpen, setDetailsOpen] = React.useState(false);
+  const [visitId, setVisitId] = React.useState<string | null>(null);
+
+
+  const onClickDate = (id: string) => {
+    setVisitId(id);
+    setDetailsOpen(true);
+  };
+
+  const handleCloseProfile = () => {
+    setIsProfileOpen(false);
+    setSelected(null);
+  };
 
   const filtered = React.useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return assignments;
-    return assignments.filter((a) =>
-      // a.careAgentName.toLowerCase().includes(term) ||
-      // a.careReceiverName.toLowerCase().includes(term)
-      a
+    return assignments.filter(
+      (a) =>
+        // a.careAgentName.toLowerCase().includes(term) ||
+        // a.careReceiverName.toLowerCase().includes(term)
+        a,
     );
   }, [assignments, search]);
 
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
-
-  const handleCloseEdit = () => {
-    setIsEditOpen(false);
-    setSelected(null);
-  };
-  console.log(assignments)
 
   return (
     <>
@@ -208,41 +282,43 @@ export function AssignmentList() {
           <div>
             {/* Header row */}
             <div className="grid grid-cols-[1.6fr_1.6fr_0.9fr_0.9fr_0.9fr_40px] gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-800/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              <div>Care Agent</div>
               <div>Care Receiver</div>
-              <div>Frequency</div>
+              <div>Visit Frequency</div>
               <div>Status</div>
               <div>Next Visit</div>
             </div>
 
             {filtered.map((a) => {
               const isExpanded = expandedId === a.id;
-              const agentInitials = a.careAgent?.user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
-              const receiverInitials = a.careReceiver?.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+              const agentInitials = a.careAgent?.user.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
+              const receiverInitials = a.careReceiver?.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
               const nextVisitLabel = a.schedule.nextVisit
-                ? new Date(a.schedule.nextVisit).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                ? new Date(a.schedule.nextVisit).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })
                 : "—";
 
               return (
-                <div key={a.id} className="border-t border-slate-100 dark:border-slate-800">
+                <div
+                  key={a.id}
+                  className="border-t border-slate-100 dark:border-slate-800"
+                >
                   {/* Row */}
                   <div
                     className="group grid grid-cols-[1.6fr_1.6fr_0.9fr_0.9fr_0.9fr_40px] gap-2 px-4 py-3.5 items-center hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
                     onClick={() => toggleExpand(a.id)}
                   >
-                    {/* Care Agent */}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-400 flex items-center justify-center text-xs font-bold shrink-0">
-                        {agentInitials}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
-                          {a.careAgent?.user.name}
-                        </p>
-                        <p className="text-xs text-slate-400 truncate">{a.careAgent?.employeeId}</p>
-                      </div>
-                    </div>
-
                     {/* Care Receiver */}
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400 flex items-center justify-center text-xs font-bold shrink-0">
@@ -252,15 +328,21 @@ export function AssignmentList() {
                         <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
                           {a.careReceiver?.name}
                         </p>
-                        <p className="text-xs text-slate-400 truncate">{a.careReceiver?.city}</p>
+                        <p className="text-xs text-slate-400 truncate">
+                          {a.careReceiver?.city}
+                        </p>
                       </div>
                     </div>
 
                     {/* Frequency */}
-                    <div><FrequencyBadge frequency={a.schedule.frequency} /></div>
+                    <div>
+                      <FrequencyBadge frequency={a.schedule.frequency} />
+                    </div>
 
                     {/* Status */}
-                    <div><StatusBadge status={a.status} /></div>
+                    <div>
+                      <StatusBadge status={a.status} />
+                    </div>
 
                     {/* Next visit */}
                     <div className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
@@ -269,23 +351,42 @@ export function AssignmentList() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                      <ChevronDown className={cn(
-                        "w-4 h-4 text-slate-400 transition-transform",
-                        isExpanded && "rotate-180"
-                      )} />
+                    {/* Actions */}
+                    <div
+                      className="flex items-center justify-end gap-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ChevronDown
+                        className={cn(
+                          "w-4 h-4 text-slate-400 transition-transform",
+                          isExpanded && "rotate-180",
+                        )}
+                      />
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-80 group-hover:opacity-100 focus:opacity-100 transition-all outline-none">
                             <MoreHorizontal className="w-4 h-4" />
                           </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-44 p-1 shadow-lg border-slate-200 dark:border-slate-700">
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-44 p-1 shadow-lg border-slate-200 dark:border-slate-700"
+                        >
                           <DropdownMenuItem
                             className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
                             onClick={() => {
                               setSelected(a);
-                              setIsVisitLogOpen(true);
+                              setLogOpen(true);
+                            }}
+                          >
+                            <Plus className="w-3.5 h-3.5 text-slate-400" />
+                            Add Visit Log
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
+                            onClick={() => {
+                              setSelected(a);
+                              setHistoryOpen(true);
                             }}
                           >
                             <Eye className="w-3.5 h-3.5 text-slate-400" />
@@ -295,24 +396,13 @@ export function AssignmentList() {
                             className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
                             onClick={() => {
                               setSelected(a);
-                              setIsEditOpen(true);
+                              setIsProfileOpen(true);
                             }}
                           >
-                            <Pencil className="w-3.5 h-3.5 text-slate-400" />
-                            Edit Assignment
+                            <Eye className="w-3.5 h-3.5 text-slate-400" />
+                            View Care Reciever Info
                           </DropdownMenuItem>
                           <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-slate-800" />
-                          <DropdownMenuItem
-                            disabled={a.status === "CANCELLED"}
-                            className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-red-600 dark:text-red-400 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/30 focus:bg-red-50 dark:focus:bg-red-950/30 focus:text-red-600 disabled:opacity-40 disabled:cursor-not-allowed"
-                            onClick={() => {
-                              setSelected(a);
-                              setIsCancelOpen(true);
-                            }}
-                          >
-                            <Ban className="w-3.5 h-3.5" />
-                            Cancel Assignment
-                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -326,16 +416,25 @@ export function AssignmentList() {
                         Recent Visits
                       </p>
                       <div className="flex gap-4">
-
                         {a.schedule.recentVisits.length === 0 ? (
-                          <p className="text-xs text-slate-400 italic">No visits logged yet</p>
+                          <p className="text-xs text-slate-400 italic">
+                            No visits logged yet
+                          </p>
                         ) : (
-                          a.schedule.recentVisits.map((v, index) => <VisitChip key={index} visit={{ scheduledAt: v.scheduledAt, status: v.status }} />)
+                          a.schedule.recentVisits.map((v, index) => (
+                            <VisitChip
+                              key={v.id}
+                              visit={{
+                                scheduledAt: v.scheduledAt,
+                                status: v.status,
+                              }}
+                              onClickHandleVisitCard={() => onClickDate(v.id)}
+                            />
+                          ))
                         )}
                       </div>
                       {/* </div> */}
                     </div>
-
                   )}
                 </div>
               );
@@ -343,34 +442,35 @@ export function AssignmentList() {
           </div>
         )}
       </div>
+      {/* Modals */}
+      <LogVisitModal
+        assignmentId={selected?.id ?? null}
+        careReceiverId={selected?.careReceiverId ?? null}
+        receiverName={selected?.careReceiver?.name}
+        open={logOpen}
+        onOpenChange={setLogOpen}
+      />
+      <VisitHistoryModal
+        careReceiverId={selected?.careReceiverId ?? null}
+        visitId={visitId}
+        receiverName={selected?.careReceiver?.name}
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+      />
 
-      {/* ── Edit sheet ── */}
-      {/* <EditAssignmentSheet
-        assignment={selected}
-        isOpen={isEditOpen}
-        onClose={handleCloseEdit}
-      /> */}
-
-      {/* ── Visit log modal (placeholder until VisitLog CRUD is ready) ── */}
-      {/* <VisitLogModal
-        assignment={selected}
-        open={isVisitLogOpen}
+      <CareReceiverProfileModal
+        careReceiverId={selected?.careReceiverId ?? null}
+        open={isProfileOpen}
         onOpenChange={(open) => {
-          setIsVisitLogOpen(open);
-          if (!open) setSelected(null);
+          if (!open) handleCloseProfile();
         }}
-      /> */}
+      />
 
-      {/* ── Cancel confirm ── */}
-      {/* <DeleteConfirmDialog
-        isOpen={isCancelOpen}
-        onOpenChange={setIsCancelOpen}
-        title="Cancel Assignment"
-        description="This will mark the assignment as cancelled. Future scheduled visits will not be generated."
-        // itemName={selected ? `${selected.careAgentName} → ${selected.careReceiverName}` : ""}
-        // loading={cancelMutation.isPending}
-        // onConfirm={() => cancelMutation.mutate(selected!.id)}
-      /> */}
+      <VisitDetailView
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+        visitId={visitId}
+      />
     </>
   );
 }

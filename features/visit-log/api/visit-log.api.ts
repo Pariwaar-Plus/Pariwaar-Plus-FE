@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api, { ApiResponse } from "@/lib/axios";
 import { handleApiError } from "@/lib/handle-api-error";
 import { VisitLog } from "../types/visit-log.type";
 
@@ -58,7 +58,7 @@ export const logVisit = async (
     data: LogVisitPayload
 ): Promise<VisitLog> => {
     try {
-        const response = await api.post<VisitLog>("/visit-log/log-visit", data);
+        const response = await api.post<VisitLog>("/visit-logs/log", data);
         return response.data;
     } catch (error) {
         throw handleApiError(error, "Failed to log visit");
@@ -73,14 +73,30 @@ export const logVisit = async (
  * are assigned to; a client only their own).
  */
 export const getVisitHistory = async (
-    careReceiverId: string
+    careReceiverId: string,
+    visitId?: string
 ): Promise<VisitLog[]> => {
     try {
-        const response = await api.get<VisitLog[]>(
-            `/visit-log/history/${careReceiverId}`
-        );
-        return response.data;
+        const url = `/visit-logs/history/care-receiver/${careReceiverId}`
+        const response = await api.get<ApiResponse<VisitLog[]>>(url);
+        return response.data.data;
     } catch (error) {
         throw handleApiError(error, "Failed to load visit history");
     }
 };
+
+export const getVisitLogById = async (
+    visitLogId: string,
+): Promise<VisitLog> => {
+    try {
+        const response = await api.get<ApiResponse<VisitLog>>(
+            `/visit-logs/${visitLogId}`
+        );
+        return response.data.data;
+    } catch (error) {
+        throw handleApiError(error, "Failed to load visit history");
+    }
+};
+
+
+

@@ -52,6 +52,31 @@ const nowLocal = () => format(new Date(), "yyyy-MM-dd'T'HH:mm");
 const toIso = (v?: string) => (v ? new Date(v).toISOString() : undefined);
 const clean = (v?: string) => (v && v.trim() !== "" ? v.trim() : undefined);
 
+
+type NumberInputProps = React.ComponentProps<typeof Input> & {
+    value: number | undefined;
+    onChange: (value: number | undefined) => void;
+};
+
+function NumberInput({
+    value,
+    onChange,
+    ...props
+}: NumberInputProps) {
+    return (
+        <Input
+            type="number"
+            {...props}
+            value={value ?? ""}
+            onChange={(e) =>
+                onChange(
+                    e.target.value === "" ? undefined : e.target.valueAsNumber
+                )
+            }
+        />
+    );
+}
+
 export function LogVisitModal({
     assignmentId,
     careReceiverId,
@@ -64,17 +89,42 @@ export function LogVisitModal({
     const form = useForm<LogVisitFormValues>({
         resolver: zodResolver(logVisitFormSchema),
         defaultValues: {
-            assignmentId: assignmentId ?? "",
-            scheduledAt: nowLocal(),
+            assignmentId: "",
+            scheduledAt: new Date().toISOString().substring(0, 16), // Pre-fills current HTML datetime-local format
             checkInAt: "",
             checkOutAt: "",
-            status: "COMPLETED",
+            status: "SCHEDULED",
             cancellationReason: "",
+
+            // Vitals (Set to undefined so fields start empty without throwing NaN)
+            bloodPressureSystolic: undefined,
+            bloodPressureDiastolic: undefined,
+            pulseRate: undefined,
+            temperature: undefined,
+            oxygenSaturation: undefined,
+            weight: undefined,
+            bloodSugar: undefined,
+            respiratoryRate: undefined,
+
+            // Pain & wellbeing
+            painLevel: undefined,
+            mood: undefined,
+
+            // Medications
             medicationsGiven: "",
             medicationsSkipped: "",
+
+            // Clinical
             symptoms: "",
-            agentNotes: "",
+            woundCare: "",
+            woundCondition: undefined,
+
+            // Mobility
+            mobilityAssessment: undefined,
             mobilityNotes: "",
+
+            // Notes
+            agentNotes: "",
         },
     });
 
@@ -274,7 +324,11 @@ export function LogVisitModal({
                                                 <FormItem>
                                                     <FormLabel className="text-xs">BP Systolic</FormLabel>
                                                     <FormControl>
-                                                        <Input type="number" placeholder="120" {...field} value={field.value ?? ""} />
+                                                        <NumberInput
+                                                            placeholder="120"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -287,7 +341,12 @@ export function LogVisitModal({
                                                 <FormItem>
                                                     <FormLabel className="text-xs">BP Diastolic</FormLabel>
                                                     <FormControl>
-                                                        <Input type="number" placeholder="80" {...field} value={field.value ?? ""} />
+                                                        <NumberInput
+                                                            placeholder="80"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                        />
+                                                        {/* <Input type="number" placeholder="80" {...field} value={field.value ?? ""} /> */}
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -300,7 +359,11 @@ export function LogVisitModal({
                                                 <FormItem>
                                                     <FormLabel className="text-xs">Pulse (bpm)</FormLabel>
                                                     <FormControl>
-                                                        <Input type="number" placeholder="72" {...field} value={field.value ?? ""} />
+                                                        <NumberInput
+                                                            placeholder="72"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -313,7 +376,12 @@ export function LogVisitModal({
                                                 <FormItem>
                                                     <FormLabel className="text-xs">Temp (°C)</FormLabel>
                                                     <FormControl>
-                                                        <Input type="number" step="0.1" placeholder="36.7" {...field} value={field.value ?? ""} />
+                                                        <NumberInput
+                                                            step="0.1"
+                                                            placeholder="36.7"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -326,7 +394,12 @@ export function LogVisitModal({
                                                 <FormItem>
                                                     <FormLabel className="text-xs">SpO₂ (%)</FormLabel>
                                                     <FormControl>
-                                                        <Input type="number" step="0.1" placeholder="98" {...field} value={field.value ?? ""} />
+                                                        <NumberInput
+                                                            step="0.1"
+                                                            placeholder="98"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -339,7 +412,12 @@ export function LogVisitModal({
                                                 <FormItem>
                                                     <FormLabel className="text-xs">Sugar (mg/dL)</FormLabel>
                                                     <FormControl>
-                                                        <Input type="number" step="0.1" placeholder="110" {...field} value={field.value ?? ""} />
+                                                        <NumberInput
+                                                            step="0.1"
+                                                            placeholder="110"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -352,7 +430,11 @@ export function LogVisitModal({
                                                 <FormItem>
                                                     <FormLabel className="text-xs">Resp (/min)</FormLabel>
                                                     <FormControl>
-                                                        <Input type="number" placeholder="16" {...field} value={field.value ?? ""} />
+                                                        <NumberInput
+                                                            placeholder="16"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -365,7 +447,12 @@ export function LogVisitModal({
                                                 <FormItem>
                                                     <FormLabel className="text-xs">Weight (kg)</FormLabel>
                                                     <FormControl>
-                                                        <Input type="number" step="0.1" placeholder="65" {...field} value={field.value ?? ""} />
+                                                        <NumberInput
+                                                            step="0.1"
+                                                            placeholder="65"
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -383,7 +470,11 @@ export function LogVisitModal({
                                             <FormItem>
                                                 <FormLabel>Pain (0–10)</FormLabel>
                                                 <FormControl>
-                                                    <Input type="number" min={0} max={10} placeholder="0" {...field} value={field.value ?? ""} />
+                                                    <NumberInput
+                                                        min={0} max={10} placeholder="0"
+                                                        value={field.value}
+                                                        onChange={field.onChange}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
