@@ -22,6 +22,8 @@ import { SearchFilter } from "@/components/shared/filter/search-filter.component
 import { VisitHistoryModal } from "@/features/visit-log/components/visit-history-modal";
 import { getMyAssignments } from "../api/care-assignment.api";
 import { AssignmentStatus, CareAssignment, VisitFrequency } from "../types/care-assignment.type";
+import { EditAssignmentSheet } from "./edit-assignment-sheet";
+import { format } from "date-fns";
 // import { VisitLogModal } from "./visit-log-modal";
 
 /* ─────────────────────────────────────────────
@@ -106,17 +108,13 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
 ───────────────────────────────────────────── */
 
 export function AssignmentList() {
- 
-  const queryClient = useQueryClient();
+
   const [search, setSearch] = React.useState("");
-  const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
   const [selected, setSelected] = React.useState<CareAssignment | null>(null);
   const [isEditOpen, setIsEditOpen] = React.useState(false);
   const [isCancelOpen, setIsCancelOpen] = React.useState(false);
   const [isVisitLogOpen, setIsVisitLogOpen] = React.useState(false);
-  const [detailsOpen, setDetailsOpen] = React.useState(false);
-  const [visitId, setVisitId] = React.useState<string | null>(null);
 
   const { data: assignments = [], isLoading, isError } = useQuery({
     queryKey: ["care-assignments"],
@@ -145,21 +143,12 @@ export function AssignmentList() {
     );
   }, [assignments, search]);
 
-  const toggleExpand = (id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
-  };
-
-  const onClickDate = (id: string) => {
-    setVisitId(id);
-    setDetailsOpen(true);
-  };
 
 
   const handleCloseEdit = () => {
     setIsEditOpen(false);
     setSelected(null);
   };
-  console.log(assignments)
 
   return (
     <>
@@ -193,16 +182,16 @@ export function AssignmentList() {
         ) : (
           <div>
             {/* Header row */}
-            <div className="grid grid-cols-[1.6fr_1.6fr_0.9fr_0.9fr_0.9fr_40px] gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-800/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <div className="grid grid-cols-[1.6fr_1.6fr_1.6fr_0.9fr_0.9fr_0.9fr_40px] gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-800/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               <div>Care Agent</div>
               <div>Care Receiver</div>
+              <div>Period</div>
               <div>Frequency</div>
               <div>Status</div>
               <div>Next Visit</div>
             </div>
 
             {filtered.map((a) => {
-              const isExpanded = expandedId === a.id;
               const agentInitials = a.careAgent?.user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
               const receiverInitials = a.careReceiver?.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
               const nextVisitLabel = a.schedule.nextVisit
@@ -213,8 +202,7 @@ export function AssignmentList() {
                 <div key={a.id} className="border-t border-slate-100 dark:border-slate-800">
                   {/* Row */}
                   <div
-                    className="group grid grid-cols-[1.6fr_1.6fr_0.9fr_0.9fr_0.9fr_40px] gap-2 px-4 py-3.5 items-center hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
-                    onClick={() => toggleExpand(a.id)}
+                    className="group grid grid-cols-[1.6fr_1.6fr_1.6fr_0.9fr_0.9fr_0.9fr_40px] gap-2 px-4 py-3.5 items-center hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
                   >
                     {/* Care Agent */}
                     <div className="flex items-center gap-3 min-w-0">
@@ -240,6 +228,13 @@ export function AssignmentList() {
                         </p>
                         <p className="text-xs text-slate-400 truncate">{a.careReceiver?.city}</p>
                       </div>
+                    </div>
+
+                    {/* Period */}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                        {format(a.schedule.startDate, 'd MMM yyyy')}{a.schedule.endDate ? ` - ${format(a.schedule.endDate, "d MMM yyyy")}` : "-"}
+                      </p>
                     </div>
 
                     {/* Frequency */}
@@ -304,8 +299,7 @@ export function AssignmentList() {
                     </div>
                   </div>
 
-                  {/* Expanded — recent visits strip */}
-                
+
                 </div>
               );
             })}
@@ -314,11 +308,11 @@ export function AssignmentList() {
       </div>
 
       {/* ── Edit sheet ── */}
-      {/* <EditAssignmentSheet
+      <EditAssignmentSheet
         assignment={selected}
         isOpen={isEditOpen}
         onClose={handleCloseEdit}
-      /> */}
+      />
 
       {/* ── Visit log modal (placeholder until VisitLog CRUD is ready) ── */}
       <VisitHistoryModal

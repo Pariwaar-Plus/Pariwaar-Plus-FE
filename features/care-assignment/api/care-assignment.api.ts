@@ -1,7 +1,7 @@
 import api from "@/lib/axios";
 import { handleApiError } from "@/lib/handle-api-error";
 import axios, { AxiosError } from "axios";
-import { CareAssignmentFormValues } from "../schemas/care-assignment.schema";
+import { CareAssignmentFormValues, UpdateCareAssignmentFormValues } from "../schemas/care-assignment.schema";
 import { CareAssignment } from "../types/care-assignment.type";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001/api";
@@ -26,7 +26,7 @@ export const getMyAssignments = async (): Promise<CareAssignment[]> => {
 export const getCareAssignmentByCareReceiver = async (careReceiverId: string,): Promise<CareAssignment[]> => {
     try {
         const response = await api.get<CareAssignment[]>(
-            `${API_URL}/care-assignment/?${careReceiverId=careReceiverId}`
+            `${API_URL}/care-assignment/?${careReceiverId = careReceiverId}`
         );
         return response.data.map((assignment) => ({
             ...assignment,
@@ -53,6 +53,23 @@ export const createCareAssignment = async (
         throw handleApiError(error, "Failed to create client");
     }
 };
+
+//    CREATE
+export const updateAssignment = async (
+    id: string, data: UpdateCareAssignmentFormValues
+): Promise<CareAssignment> => {
+
+    try {
+        const response = await api.patch<CareAssignment>(
+            `${API_URL}/care-assignment/${id}`,
+            data
+        );
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error, "Failed to create client");
+    }
+};
+
 
 export const deleteCareAssignment = async (assignmentId: string) => {
 

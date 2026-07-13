@@ -25,13 +25,10 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { CareAssignment } from "../types/care-assignment.type";
+import { UpdateCareAssignmentFormValues, updateCareAssignmentSchema } from "../schemas/care-assignment.schema";
+import { updateAssignment } from "../api/care-assignment.api";
 
-import { updateAssignment } from "../api/assignment.api";
-import { CareAssignment } from "../types/assignment.type";
-import {
-  updateAssignmentSchema,
-  UpdateAssignmentFormValues,
-} from "../schemas/assignment.schema";
 
 /* ── Shared styles ── */
 
@@ -78,33 +75,33 @@ interface EditAssignmentSheetProps {
 export function EditAssignmentSheet({ assignment, isOpen, onClose }: EditAssignmentSheetProps) {
   const queryClient = useQueryClient();
 
-  const form = useForm<UpdateAssignmentFormValues>({
-    resolver: zodResolver(updateAssignmentSchema) as any,
+  const form = useForm<UpdateCareAssignmentFormValues>({
+    resolver: zodResolver(updateCareAssignmentSchema) as any,
     defaultValues: {
-      visitFrequency: "WEEKLY",
-      startDate:      "",
-      endDate:        "",
-      status:         "ACTIVE",
-      notes:          "",
+      frequency: "WEEKLY",
+      startDate: "",
+      endDate: "",
+      notes: "",
     },
   });
+
+  console.log(assignment)
 
   React.useEffect(() => {
     if (!assignment) return;
     form.reset({
-      visitFrequency: assignment.visitFrequency,
-      startDate:      assignment.startDate ? assignment.startDate.split("T")[0] : "",
-      endDate:        assignment.endDate   ? assignment.endDate.split("T")[0]   : "",
-      status:         assignment.status,
-      notes:          assignment.notes ?? "",
+      frequency: assignment.schedule.frequency,
+      startDate: assignment.schedule.startDate ? assignment.schedule.startDate.split("T")[0] : "",
+      endDate: assignment.schedule.endDate ? assignment.schedule.endDate.split("T")[0] : "",
+      notes: assignment.notes ?? "",
     });
   }, [assignment, form]);
 
   const mutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateAssignmentFormValues }) =>
+    mutationFn: ({ id, data }: { id: string; data: UpdateCareAssignmentFormValues }) =>
       updateAssignment(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["care-assignments"] });
       toast.success("Assignment updated successfully");
       onClose();
     },
@@ -113,19 +110,19 @@ export function EditAssignmentSheet({ assignment, isOpen, onClose }: EditAssignm
     },
   });
 
-  const onSubmit = (values: UpdateAssignmentFormValues) => {
+  const onSubmit = (values: UpdateCareAssignmentFormValues) => {
     if (!assignment) return;
     mutation.mutate({ id: assignment.id, data: values });
   };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-[460px] p-0 flex flex-col gap-0 overflow-hidden">
+      <SheetContent className="sm:max-w-115 p-0 flex flex-col gap-0 overflow-hidden">
 
         {/* ── Header ── */}
         <SheetHeader className="px-6 pt-6 pb-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
           <div className="flex items-start gap-4">
-            <div className="w-11 h-11 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center shrink-0">
               <Repeat className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
             </div>
             <div className="min-w-0 flex-1 pt-0.5">
@@ -133,7 +130,7 @@ export function EditAssignmentSheet({ assignment, isOpen, onClose }: EditAssignm
                 Edit Assignment
               </SheetTitle>
               <SheetDescription className="text-xs text-slate-400 mt-0.5 truncate">
-                {assignment?.careAgentName ?? "Loading…"} → {assignment?.careReceiverName ?? ""}
+                {assignment?.careAgent?.user.name ?? "Loading…"} → {assignment?.careReceiver?.name ?? ""}
               </SheetDescription>
             </div>
           </div>
@@ -152,7 +149,7 @@ export function EditAssignmentSheet({ assignment, isOpen, onClose }: EditAssignm
 
               <FormField
                 control={form.control}
-                name="visitFrequency"
+                name="frequency"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className={labelClass}>Visit Frequency</FormLabel>
@@ -211,9 +208,9 @@ export function EditAssignmentSheet({ assignment, isOpen, onClose }: EditAssignm
                 />
               </div>
 
-              <SectionLabel>Status</SectionLabel>
+              {/* <SectionLabel>Status</SectionLabel> */}
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="status"
                 render={({ field }) => (
@@ -235,7 +232,7 @@ export function EditAssignmentSheet({ assignment, isOpen, onClose }: EditAssignm
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <SectionLabel>Notes</SectionLabel>
 
