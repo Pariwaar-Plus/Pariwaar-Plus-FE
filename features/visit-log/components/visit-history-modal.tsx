@@ -160,6 +160,7 @@ export function VisitCard({ visit }: { visit: VisitLog }) {
 interface VisitHistoryModalProps {
     careReceiverId: string | null;
     receiverName?: string;
+    careAgentName?:string
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
@@ -167,6 +168,7 @@ interface VisitHistoryModalProps {
 export function VisitHistoryModal({
     careReceiverId,
     receiverName,
+    careAgentName,
     open,
     onOpenChange,
 }: VisitHistoryModalProps) {
@@ -186,7 +188,7 @@ export function VisitHistoryModal({
                     <DialogTitle>Visit History</DialogTitle>
                     <DialogDescription>
                         {receiverName
-                            ? `Recorded visits for ${receiverName}.`
+                            ? `Recorded visits for ${receiverName} by ${careAgentName}`
                             : "Recorded visits and health updates."}
                     </DialogDescription>
                 </DialogHeader>

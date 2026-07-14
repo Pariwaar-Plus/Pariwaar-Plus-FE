@@ -383,6 +383,7 @@ export function CareAgentAssignmentList({ assignments, isLoading, isError }: { a
       />
       <VisitHistoryModal
         careReceiverId={selected?.careReceiverId ?? null}
+        careAgentName = {selected?.careAgent?.user.name}
         receiverName={selected?.careReceiver?.name}
         open={historyOpen}
         onOpenChange={setHistoryOpen}

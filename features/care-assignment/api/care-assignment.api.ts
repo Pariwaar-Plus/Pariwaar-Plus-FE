@@ -54,7 +54,6 @@ export const createCareAssignment = async (
     }
 };
 
-//    CREATE
 export const updateAssignment = async (
     id: string, data: UpdateCareAssignmentFormValues
 ): Promise<CareAssignment> => {

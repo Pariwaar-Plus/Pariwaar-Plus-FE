@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
     LayoutDashboard, Users, UserRound, CreditCard,
     ClipboardList, Settings, HeartHandshake, User,
-    LucideIcon,
+    LucideIcon,Logs
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore, selectUser } from "@/features/auth/store/auth.store";
@@ -62,6 +62,14 @@ const ROUTES_BY_ROLE: Record<string, Route[]> = {
             label: "Assignments",
             icon: ClipboardList,
             href: "/dashboard/admin/care-assignments",
+            color: "text-orange-400",
+            activeColor: "text-orange-300",
+            activeBg: "bg-orange-500/10 border-orange-500/30",
+        },
+         {
+            label: "VisitLogs",
+            icon: Logs,
+            href: "/dashboard/admin/visit-logs",
             color: "text-orange-400",
             activeColor: "text-orange-300",
             activeBg: "bg-orange-500/10 border-orange-500/30",

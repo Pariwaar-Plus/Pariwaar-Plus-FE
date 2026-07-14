@@ -15,7 +15,6 @@ export function VisitDetailView({
     open,
     onOpenChange,
 }: VisitDetailModalProps) {
-    console.log("Detilas")
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ["single-visit", visitId],
         queryFn: () => getVisitLogById(visitId!),
@@ -30,9 +29,8 @@ export function VisitDetailView({
                 <DialogHeader>
                     <DialogTitle>Visit History</DialogTitle>
                     <DialogDescription>
-                        {/* {receiverName
-                            ? `Recorded visits for ${receiverName}.`
-                            : "Recorded visits and health updates."} */}
+                        {`Log Details: ${data?.careAgent?.user.name} -->  ${data?.assignment?.careReceiver?.name} `}
+
                     </DialogDescription>
                 </DialogHeader>
 

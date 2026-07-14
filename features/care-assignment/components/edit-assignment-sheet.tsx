@@ -85,7 +85,6 @@ export function EditAssignmentSheet({ assignment, isOpen, onClose }: EditAssignm
     },
   });
 
-  console.log(assignment)
 
   React.useEffect(() => {
     if (!assignment) return;

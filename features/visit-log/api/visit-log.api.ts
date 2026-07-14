@@ -1,6 +1,7 @@
 import api, { ApiResponse } from "@/lib/axios";
 import { handleApiError } from "@/lib/handle-api-error";
-import { VisitLog } from "../types/visit-log.type";
+import { VisitLog, VisitStatus } from "../types/visit-log.type";
+import { UpdateVisitLogFormValues } from "../schemas/visit-log.schema";
 
 /**
  * Payload sent when a care-agent logs a visit.
@@ -84,6 +85,47 @@ export const getVisitHistory = async (
         throw handleApiError(error, "Failed to load visit history");
     }
 };
+export interface GetVisitLogsQuery {
+    page?: number;
+    limit?: number;
+
+    careAgentId?: string;
+    careReceiverId?: string;
+
+    status?: string;
+
+    from?: string;
+    to?: string;
+}
+// export async function getVisitLogsWithFilter() {
+//   const { data } = await api.get("/visit-log");
+
+//   return data;
+// }
+
+export const getVisitLogs = async (
+    params: GetVisitLogsQuery = {}
+): Promise<VisitLog[]> => {
+    try {
+          const filteredParams = Object.fromEntries(
+            Object.entries(params).filter(
+                ([_, value]) => value !== "" && value !== undefined
+            )
+        );
+
+        const response = await api.get<ApiResponse<VisitLog[]>>(
+            `/visit-logs`,
+            {
+                params:filteredParams
+            }
+        );
+
+        return response.data.data;
+    } catch (error) {
+        throw handleApiError(error, "Failed to load visit history");
+    }
+};
+
 
 export const getVisitLogById = async (
     visitLogId: string,
@@ -95,6 +137,40 @@ export const getVisitLogById = async (
         return response.data.data;
     } catch (error) {
         throw handleApiError(error, "Failed to load visit history");
+    }
+};
+
+export const updateVisitLog = async (
+    visitLogId: string, data: UpdateVisitLogFormValues
+): Promise<VisitLog> => {
+    try {
+        const response = await api.patch<VisitLog>(
+            `/visit-logs/${visitLogId}`,
+            data
+        );
+        return response.data;
+    } catch (error) {
+        throw handleApiError(error, "Failed to create client");
+    }
+};
+
+export const deleteVisitLog = async (
+    visitLogId: string
+): Promise<void> => {
+
+    try {
+
+        await api.delete(
+            `/visit-logs/${visitLogId}`
+        );
+
+    } catch (error) {
+
+        throw handleApiError(
+            error,
+            "Failed to delete visit log"
+        );
+
     }
 };
 

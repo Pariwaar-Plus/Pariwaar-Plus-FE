@@ -49,7 +49,7 @@ interface LogVisitModalProps {
 
 // datetime-local wants "yyyy-MM-ddTHH:mm" in local time.
 const nowLocal = () => format(new Date(), "yyyy-MM-dd'T'HH:mm");
-const toIso = (v?: string) => (v ? new Date(v).toISOString() : undefined);
+export const toIso = (v?: string) => (v ? new Date(v).toISOString() : undefined);
 const clean = (v?: string) => (v && v.trim() !== "" ? v.trim() : undefined);
 
 
