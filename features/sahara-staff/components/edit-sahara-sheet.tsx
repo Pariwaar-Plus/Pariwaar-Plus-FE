@@ -120,7 +120,7 @@ export function EditSaharaSheet({ agent, isOpen, onClose }: EditSaharaSheetProps
     React.useEffect(() => {
         if (!agent) return;
         form.reset({
-            name:            agent.name ?? "",
+            name:            agent.user.name ?? "",
             phone:           agent.phone ?? "",
             secondaryPhone:  agent.secondaryPhone ?? "",
             gender:          agent.gender ?? "FEMALE",
@@ -162,18 +162,18 @@ export function EditSaharaSheet({ agent, isOpen, onClose }: EditSaharaSheetProps
     };
 
     // Initials avatar
-    const initials = agent?.name
-        ? agent.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
+    const initials = agent?.user.name
+        ? agent.user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
         : "?";
 
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
-            <SheetContent className="sm:max-w-[500px] p-0 flex flex-col gap-0 overflow-hidden">
+            <SheetContent className="sm:max-w-125 p-0 flex flex-col gap-0 overflow-hidden">
 
                 {/* ── Header ── */}
                 <SheetHeader className="px-6 pt-6 pb-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
                     <div className="flex items-start gap-4">
-                        <div className="w-11 h-11 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center flex-shrink-0">
+                        <div className="w-11 h-11 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center shrink-0">
                             <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
                                 {initials}
                             </span>
@@ -183,7 +183,7 @@ export function EditSaharaSheet({ agent, isOpen, onClose }: EditSaharaSheetProps
                                 Edit Sahara Staff
                             </SheetTitle>
                             <SheetDescription className="text-xs text-slate-400 mt-0.5 truncate">
-                                {agent?.name ?? "Loading…"} · {agent?.employeeId ?? ""}
+                                {agent?.user.name ?? "Loading…"} · {agent?.employeeId ?? ""}
                             </SheetDescription>
                         </div>
                     </div>

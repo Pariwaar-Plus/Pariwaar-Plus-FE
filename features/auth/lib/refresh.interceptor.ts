@@ -6,7 +6,6 @@ import axios, {
     InternalAxiosRequestConfig,
 } from "axios";
 
-import { refresh } from "../api/auth.api";
 
 import {
     getAccessToken,
@@ -15,6 +14,7 @@ import {
 } from "../utils/token";
 
 import { useAuthStore } from "../store/auth.store";
+import { refreshToken } from "../api/auth.api";
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
@@ -47,7 +47,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
 
     refreshPromise = (async () => {
         try {
-            const res: RefreshResponse = await refresh();
+            const res: RefreshResponse = await refreshToken();
 
             if (!res.accessToken) {
                 throw new Error("No access token received");

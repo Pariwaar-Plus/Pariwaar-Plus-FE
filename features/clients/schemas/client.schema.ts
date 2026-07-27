@@ -14,8 +14,8 @@ export const clientSchema = z.object({
     timezone:       z.string().min(2, "Timezone is required"),
     address:        optionalString,
     city:           optionalString,
-    billingType:    z.enum(["MONTHLY", "QUARTERLY", "YEARLY"]).default("MONTHLY"),
-    paymentStatus:  z.enum(["PENDING", "PAID", "OVERDUE", "CANCELLED"]).default("PENDING"),
+    billingType:    z.enum(["MONTHLY", "QUARTERLY", "YEARLY"]),
+    paymentStatus:  z.enum(["PENDING", "PAID", "OVERDUE", "CANCELLED"]),
 });
 
 export const updateClientSchema = clientSchema
