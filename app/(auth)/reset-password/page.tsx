@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 import { z } from "zod";
 
@@ -20,14 +20,12 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 
-import { Input } from "@/components/ui/input";
 
 import {
-    ArrowLeft,
     ArrowRight,
     Eye,
     EyeOff,
-    Lock,
+    Lock
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -35,7 +33,7 @@ import { toast } from "sonner";
 
 
 import { StaticSidebar } from "@/components/shared/side-bar-static/sidebar-static";
-import { changePassword, validateResetToken } from "@/features/auth/api/auth.api";
+import { resetPassword, validateResetToken } from "@/features/auth/api/auth.api";
 
 const schema = z
     .object({
@@ -90,7 +88,7 @@ export default function ResetPassword() {
     });
 
     const resetMutation = useMutation({
-        mutationFn: changePassword,
+        mutationFn: resetPassword,
 
         onSuccess: () => {
             toast.success("Password updated successfully.");

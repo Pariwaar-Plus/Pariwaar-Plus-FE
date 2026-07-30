@@ -16,7 +16,7 @@ export const login = async (
     const res = await api.post<LoginResponse>("/auth/login", data);
 
     return res.data;
-};
+};  
 
 /**
  * GET CURRENT USER
@@ -41,7 +41,7 @@ export const logout = async (): Promise<void> => {
  */
 export const refreshToken = async (): Promise<{ accessToken: string }> => {
     const res = await api.post<{ accessToken: string }>("/auth/refresh", {}, {
-        withCredentials: true,
+    withCredentials: true,
     });
 
     return res.data;
@@ -54,9 +54,9 @@ export const forgotPassword = async (data: {
     await api.post("/auth/forgot-password", data);
 };
 
-export const validateResetToken = async (data: {
-    token: string
-}): Promise<string> => {
+export const validateResetToken = async(data:{
+    token:string
+}):Promise<string>=>{
     return await api.post("/auth/reset-password/validate", data);
 }
 
@@ -65,9 +65,17 @@ export const validateResetToken = async (data: {
  * Used from the profile page (e.g. to replace a temporary password).
  * Backend reads the acting user from the JWT (authMiddleware).
  */
-export const changePassword = async (data: {
+
+export const resetPassword = async (data: {
     token: string;
     password: string;
 }): Promise<void> => {
     await api.post("/auth/reset-password", data);
+};
+
+export const changePassword = async (data: {
+    currentPassword: string;
+    newPassword: string;
+}): Promise<void> => {
+    await api.post("/auth/change-password", data);
 };
