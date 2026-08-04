@@ -28,6 +28,7 @@ import {
 import { CareReceiver } from "@/features/care-receiver/types/care-receiver.type";
 import { VisitHistoryModal } from "@/features/visit-log/components/visit-history-modal";
 import { getCareReceivers } from "@/features/care-receiver/api/care-receiver.api";
+import { HealthDashboard } from "./health-dashboard";
 
 const MOBILITY_STYLE: Record<string, string> = {
     INDEPENDENT: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -140,12 +141,12 @@ function ReceiverCard({
             </div>
 
             <div className="mt-4 space-y-2 text-sm text-slate-600">
-                {receiver.city && (
+                {/* {receiver.city && (
                     <div className="flex items-center gap-2">
                         <MapPin className="h-3.5 w-3.5 text-slate-400" />
                         {[receiver.tole, receiver.city].filter(Boolean).join(", ")}
                     </div>
-                )}
+                )} */}
                 {receiver.medicalCondition && (
                     <div className="flex flex-wrap gap-1 pt-1">
                         {receiver.medicalCondition.split(",").map((c) => (
@@ -177,23 +178,23 @@ function ReceiverCard({
 }
 
 export function ClientDashboard() {
-    const { data: receivers = [], isLoading, isError, error } = useQuery({
-        queryKey: ["my-care-receivers"],
-        queryFn: getCareReceivers,
-    });
+    // const { data: receivers = [], isLoading, isError, error } = useQuery({
+    //     queryKey: ["my-care-receivers"],
+    //     queryFn: getCareReceivers,
+    // });
 
-    const [selected, setSelected] = React.useState<CareReceiver | null>(null);
-    const [updatesOpen, setUpdatesOpen] = React.useState(false);
-    const [detailsOpen, setDetailsOpen] = React.useState(false);
+    // const [selected, setSelected] = React.useState<CareReceiver | null>(null);
+    // const [updatesOpen, setUpdatesOpen] = React.useState(false);
+    // const [detailsOpen, setDetailsOpen] = React.useState(false);
 
-    const openUpdates = (r: CareReceiver) => {
-        setSelected(r);
-        setUpdatesOpen(true);
-    };
-    const openDetails = (r: CareReceiver) => {
-        setSelected(r);
-        setDetailsOpen(true);
-    };
+    // const openUpdates = (r: CareReceiver) => {
+    //     setSelected(r);
+    //     setUpdatesOpen(true);
+    // };
+    // const openDetails = (r: CareReceiver) => {
+    //     setSelected(r);
+    //     setDetailsOpen(true);
+    // };
 
     return (
         <div className="space-y-6">
@@ -203,7 +204,7 @@ export function ClientDashboard() {
                     Your loved ones under Pariwaar+ care, and their latest health updates.
                 </p>
             </div>
-
+{/* 
             <div className="grid grid-cols-1 gap-4 sm:max-w-xs">
                 <StatCard icon={Users} label="Care Receivers" value={receivers.length} />
             </div>
@@ -255,7 +256,8 @@ export function ClientDashboard() {
                 receiver={selected}
                 open={detailsOpen}
                 onOpenChange={setDetailsOpen}
-            />
+            /> */}
+            <HealthDashboard/>
         </div>
     );
 }

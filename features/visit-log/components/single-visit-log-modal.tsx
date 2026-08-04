@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { getVisitHistory, getVisitLogById } from "../api/visit-log.api";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useQuery } from "@tanstack/react-query";
+import { getVisitLogById } from "../api/visit-log.api";
 import { VisitCard } from "./visit-history-modal";
 
 

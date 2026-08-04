@@ -8,30 +8,27 @@ import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Ban,
-  Calendar,
   ClipboardList,
   Eye,
   MoreHorizontal,
-  Pencil,
-  Repeat
+  Pencil
 } from "lucide-react";
 import * as React from "react";
 
 
-import { SearchFilter } from "@/components/shared/filter/search-filter.component";
-import { format } from "date-fns";
-import { toast } from "sonner";
-import { VisitLog, VisitStatus } from "../types/visit-log.type";
-import { deleteVisitLog, getVisitHistory, getVisitLogs } from "../api/visit-log.api";
-import { VisitDetailView } from "./single-visit-log-modal";
-import { EditAssignmentSheet } from "@/features/care-assignment/components/edit-assignment-sheet";
-import { Button } from "@/components/ui/button";
-import VisitLogFilters from "./VisitLogFilters";
-import { getCareAgents } from "@/features/sahara-staff/api/care-agent.api";
-import { getCareReceivers } from "@/features/care-receiver/api/care-receiver.api";
-import { useSearchParams } from "next/navigation";
-import { EditVistLogSheet } from "./edit-visit-log-sheet";
 import { DeleteConfirmDialog } from "@/components/shared/dialogs/delete-confirm-dialogue.component";
+import { SearchFilter } from "@/components/shared/filter/search-filter.component";
+import { Button } from "@/components/ui/button";
+import { getCareReceivers } from "@/features/care-receiver/api/care-receiver.api";
+import { getCareAgents } from "@/features/sahara-staff/api/care-agent.api";
+import { format } from "date-fns";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { deleteVisitLog, getVisitLogs } from "../api/visit-log.api";
+import { VisitLog, VisitStatus } from "../types/visit-log.type";
+import { EditVistLogSheet } from "./edit-visit-log-sheet";
+import { VisitDetailView } from "./single-visit-log-modal";
+import VisitLogFilters from "./VisitLogFilters";
 // import { VisitLogModal } from "./visit-log-modal";
 
 /* ─────────────────────────────────────────────

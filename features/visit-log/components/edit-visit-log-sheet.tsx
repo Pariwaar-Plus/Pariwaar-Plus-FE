@@ -248,9 +248,9 @@ export function EditVistLogSheet({ visitLog, isOpen, onClose }: EditVisitLogShee
                 values.scheduledAt!
             ).toISOString(),
 
-            checkInAt: toIso(values.checkInAt),
+            checkInAt: toIso(values.scheduledAt!,values.checkInAt),
 
-            checkOutAt: toIso(values.checkOutAt),
+            checkOutAt: toIso(values.scheduledAt!,values.checkOutAt),
         };
         if (!visitLog) return;
         mutation.mutate({ id: visitLog.id, data: payload });

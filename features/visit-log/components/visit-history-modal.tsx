@@ -84,14 +84,14 @@ function bpValue(v: VisitLog) {
 export function VisitCard({ visit }: { visit: VisitLog }) {
     const user = useAuthStore(selectUser);
     const role = user?.role as string | undefined;
-    const when = visit.checkInAt ?? visit.scheduledAt;
-    const upto = visit.checkOutAt
+    const when = visit.scheduledAt;
     return (
         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                     <CalendarClock className="h-4 w-4 text-slate-400" />
-                    {when ? format(new Date(when), "PPP p") : "—"} {upto ? "to" : "-"} {upto ? format(new Date(upto), "HH:mm") : ""}
+                    {/* {when ? format(new Date(when), "PPP p") : "—"} {upto ? "to" : "-"} {upto ? format(new Date(upto), "HH:mm") : ""} */}
+                    { format(new Date(when), "PPP p") }
                 </div>
                 <div className="flex items-center justify-between gap-2">
 

@@ -49,7 +49,24 @@ interface LogVisitModalProps {
 
 // datetime-local wants "yyyy-MM-ddTHH:mm" in local time.
 const nowLocal = () => format(new Date(), "yyyy-MM-dd'T'HH:mm");
-export const toIso = (v?: string) => (v ? new Date(v).toISOString() : undefined);
+export const toIso = (scheduledDate: string, v?: string) => {
+
+    if (v) {
+
+        const myDate = new Date(scheduledDate);
+
+        // 4. Split the string into numbers
+        const [hours, minutes] = v.split(":").map(Number);
+
+        // 5. Update the Date object's hours and minutes
+        myDate.setHours(hours, minutes, 0, 0);
+        return myDate.toISOString()
+    } else {
+        return undefined
+    }
+
+
+}
 const clean = (v?: string) => (v && v.trim() !== "" ? v.trim() : undefined);
 
 
@@ -160,8 +177,8 @@ export function LogVisitModal({
         const payload: LogVisitPayload = {
             assignmentId: values.assignmentId,
             scheduledAt: new Date(values.scheduledAt).toISOString(),
-            checkInAt: toIso(values.checkInAt),
-            checkOutAt: toIso(values.checkOutAt),
+            checkInAt: toIso(values.scheduledAt, values.checkInAt,),
+            checkOutAt: toIso(values.scheduledAt, values.checkOutAt),
             status: values.status,
             cancellationReason: clean(values.cancellationReason),
 
@@ -283,7 +300,7 @@ export function LogVisitModal({
                                                 <FormLabel>Check-in (optional)</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        type="datetime-local"
+                                                        type="time"
                                                         {...field}
                                                         value={field.value ?? ""}
                                                     />
@@ -300,7 +317,7 @@ export function LogVisitModal({
                                                 <FormLabel>Check-out (optional)</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        type="datetime-local"
+                                                        type="time"
                                                         {...field}
                                                         value={field.value ?? ""}
                                                     />

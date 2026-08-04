@@ -26,7 +26,7 @@ export const getMyAssignments = async (): Promise<CareAssignment[]> => {
 export const getCareAssignmentByCareReceiver = async (careReceiverId: string,): Promise<CareAssignment[]> => {
     try {
         const response = await api.get<CareAssignment[]>(
-            `${API_URL}/care-assignment/?${careReceiverId = careReceiverId}`
+            `${API_URL}/care-assignment/?careReceiverId=${careReceiverId}`
         );
         return response.data.map((assignment) => ({
             ...assignment,
