@@ -28,9 +28,9 @@ export default function LoginPage() {
 
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleSubmit = async (values:loginFormValue) => {
+    const handleSubmit = async (values: loginFormValue) => {
         try {
-            await login({ email:values.email, password:values.password });
+            await login({ email: values.email, password: values.password });
             const user = useAuthStore.getState().user;
             if (!user) throw new Error("User not found");
             toast.success(`Welcome back, ${user.name || 'User'}!`);
@@ -81,10 +81,16 @@ export default function LoginPage() {
                     />
 
                     <div className="w-full max-w-100 animate-fade-up">
-                        <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-(--green-pale) px-3.5 py-1.5 text-[0.74rem] font-bold uppercase tracking-[0.08em] text-(--green-deep)">
-                            <span className="h-1.5 w-1.5 rounded-full bg-(--green-light) animate-pulse" />
-                            Secure Portal
-                        </div>
+                        <a href="/" className="flex items-center gap-1 no-underline mb-4 md:hidden">
+                            <div className="w-7 h-7 bg-(--green-deep) rounded-md flex items-center justify-center">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 fill-white">
+                                    <path d="M12 21C12 21 3 14.5 3 8.5C3 5.46 5.46 3 8.5 3C10.24 3 11.91 3.81 13 5.08C14.09 3.81 15.76 3 17.5 3C20.54 3 23 5.46 23 8.5C23 14.5 12 21 12 21Z" opacity=".3" />
+                                    <path d="M9 11H11V9H13V11H15V13H13V15H11V13H9V11Z" />
+                                </svg>
+                            </div>
+                            <span className="font-['Playfair_Display'] text-[1.45rem] font-bold text-(--green-deep) tracking-[-0.02em]">Pariwaar<span className="text-(--saffron)">+</span></span>
+                        </a>
+                      
 
                         <h1 className="font-['Playfair_Display',serif] text-[2rem] font-bold leading-[1.2] text-(--green-deep) mb-[0.55rem]">Welcome back</h1>
                         <p className="text-[0.9rem] text-(--text-soft) leading-[1.6] mb-[2.2rem]">
