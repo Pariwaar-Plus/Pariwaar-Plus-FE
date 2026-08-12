@@ -3,123 +3,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-    LayoutDashboard, Users, UserRound, CreditCard,
-    ClipboardList, Settings, HeartHandshake, User,
-    LucideIcon,Logs
-} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuthStore, selectUser } from "@/features/auth/store/auth.store";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type Route = {
-    label: string;
-    icon: LucideIcon;
-    href: string;
-    color?: string;
-    activeColor?: string;
-    activeBg?: string;
-};
-
-// ─── RBAC Route Configuration ─────────────────────────────────────────────────
-
-const ROUTES_BY_ROLE: Record<string, Route[]> = {
-    ADMIN: [
-        {
-            label: "Dashboard",
-            icon: LayoutDashboard,
-            href: "/dashboard/admin",
-            color: "text-sky-400",
-            activeColor: "text-sky-300",
-            activeBg: "bg-sky-500/10 border-sky-500/30",
-        },
-        {
-            label: "Sahara Staff",
-            icon: UserRound,
-            href: "/dashboard/admin/care-agents",
-            color: "text-violet-400",
-            activeColor: "text-violet-300",
-            activeBg: "bg-violet-500/10 border-violet-500/30",
-        },
-        {
-            label: "Clients",
-            icon: CreditCard,
-            href: "/dashboard/admin/clients",
-            color: "text-emerald-400",
-            activeColor: "text-emerald-300",
-            activeBg: "bg-emerald-500/10 border-emerald-500/30",
-        },
-        {
-            label: "Care Receivers",
-            icon: Users,
-            href: "/dashboard/admin/care-receivers",
-            color: "text-pink-400",
-            activeColor: "text-pink-300",
-            activeBg: "bg-pink-500/10 border-pink-500/30",
-        },
-        {
-            label: "Assignments",
-            icon: ClipboardList,
-            href: "/dashboard/admin/care-assignments",
-            color: "text-orange-400",
-            activeColor: "text-orange-300",
-            activeBg: "bg-orange-500/10 border-orange-500/30",
-        },
-         {
-            label: "VisitLogs",
-            icon: Logs,
-            href: "/dashboard/admin/visit-logs",
-            color: "text-orange-400",
-            activeColor: "text-orange-300",
-            activeBg: "bg-orange-500/10 border-orange-500/30",
-        },
-        {
-            label: "Settings",
-            icon: Settings,
-            href: "/dashboard/profile",
-            color: "text-slate-400",
-            activeColor: "text-slate-200",
-            activeBg: "bg-slate-500/10 border-slate-500/30",
-        },
-    ],
-    CARE_AGENT: [
-        {
-            label: "My Care Receivers",
-            icon: HeartHandshake,
-            href: "/dashboard/care-agent",
-            color: "text-pink-400",
-            activeColor: "text-pink-300",
-            activeBg: "bg-pink-500/10 border-pink-500/30",
-        },
-        {
-            label: "Profile",
-            icon: User,
-            href: "/dashboard/profile",
-            color: "text-slate-400",
-            activeColor: "text-slate-200",
-            activeBg: "bg-slate-500/10 border-slate-500/30",
-        },
-    ],
-    CLIENT: [
-        {
-            label: "My Family",
-            icon: HeartHandshake,
-            href: "/dashboard/client",
-            color: "text-emerald-400",
-            activeColor: "text-emerald-300",
-            activeBg: "bg-emerald-500/10 border-emerald-500/30",
-        },
-        {
-            label: "Profile",
-            icon: User,
-            href: "/dashboard/profile",
-            color: "text-slate-400",
-            activeColor: "text-slate-200",
-            activeBg: "bg-slate-500/10 border-slate-500/30",
-        },
-    ],
-};
+import { User } from "@/features/auth/store/auth.store";
+import { RouteMetaData } from "@/app/(protected)/dashboard/layout";
 
 // ─── Role metadata ────────────────────────────────────────────────────────────
 
@@ -143,7 +29,8 @@ const ROLE_META: Record<string, { label: string; color: string; dot: string }> =
 
 // ─── Skeleton ────────────────────────────────────────────────────────────────
 
-function SidebarSkeleton({ className }: { className?: string }) {
+export function SidebarSkeleton({ className }: { className?: string }) {
+
     return (
         <div className={cn("flex flex-col h-full bg-[#0d1420]", className)}>
             {/* Logo */}
@@ -170,16 +57,8 @@ function SidebarSkeleton({ className }: { className?: string }) {
 
 // ─── Main Sidebar ─────────────────────────────────────────────────────────────
 
-export default function Sidebar({ className }: { className?: string }) {
+export default function Sidebar({ className, user, routes }: { className?: string, user: User, routes: RouteMetaData[] }) {
     const pathname = usePathname();
-    const user = useAuthStore(selectUser);
-
-    if (!user) return <SidebarSkeleton className={className} />;
-
-    const routes = user.role
-        ? ROUTES_BY_ROLE[user.role as keyof typeof ROUTES_BY_ROLE] ?? []
-        : [];
-
     const roleMeta = user.role ? ROLE_META[user.role] : null;
     const displayName = user.name || user.email;
     const initials = user.name
