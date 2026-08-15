@@ -1,41 +1,34 @@
 "use client";
 
-import * as React from "react";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Heart, Droplet, Activity, Wind,
-  Thermometer, Weight, AlertCircle,
-  Check, ArrowUp, ArrowDown, Minus,
-  ChevronRight,
+  Activity,
+  AlertCircle,
+  ArrowUp,
+  Check,
+  Droplet,
+  Heart,
+  Minus,
+  Wind
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from "react";
 import {
+  CartesianGrid,
+  Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from "recharts";
 
 import {
   getClientHealthDashboard,
-  getMyHealthDashboard,
   ReceiverHealthData,
-  VisitLogEntry,
-  LatestVitals,
+  VisitLogEntry
 } from "../api/client-dashboard-api";
-
-/* ─────────────────────────────────────────────
-   Props
-───────────────────────────────────────────── */
-
-interface HealthDashboardProps {
-  /** Pass clientId for admin view. Omit for client's own dashboard. */
-  clientId?: string;
-}
 
 /* ─────────────────────────────────────────────
    Helpers
@@ -104,7 +97,7 @@ const STATUS_BADGE: Record<VitalStatus, { label: string; className: string }> = 
 };
 
 /* ─────────────────────────────────────────────
-   Stat card
+   Stat card (top row summary tiles)
 ───────────────────────────────────────────── */
 
 interface StatCardProps {
@@ -222,7 +215,7 @@ function VitalsTable({ logs }: { logs: VisitLogEntry[] }) {
 }
 
 /* ─────────────────────────────────────────────
-   Charts
+   Chart data + reusable trend chart
 ───────────────────────────────────────────── */
 
 function buildChartData(logs: VisitLogEntry[]) {
@@ -236,12 +229,64 @@ function buildChartData(logs: VisitLogEntry[]) {
   }));
 }
 
+type ChartRow = ReturnType<typeof buildChartData>[number];
+type ChartKey = "sys" | "dia" | "glucose" | "spo2" | "pulse";
+
+interface LineConfig {
+  key:   ChartKey;
+  name:  string;
+  color: string;
+}
+
+interface VitalOption {
+  value: "bloodPressure" | "glucose" | "spo2" | "pulse";
+  label: string;
+  unit:  string;
+  lines: LineConfig[];
+  statusFn: (row: ChartRow) => VitalStatus;
+}
+
+const VITAL_OPTIONS: VitalOption[] = [
+  {
+    value: "bloodPressure",
+    label: "Blood pressure",
+    unit: "mmHg",
+    lines: [
+      { key: "sys", name: "Systolic",  color: "#E24B4A" },
+      { key: "dia", name: "Diastolic", color: "#378ADD" },
+    ],
+    statusFn: (row) => getBpStatus(row.sys, row.dia),
+  },
+  {
+    value: "glucose",
+    label: "Blood glucose",
+    unit: "mg/dL",
+    lines: [{ key: "glucose", name: "Glucose", color: "#EF9F27" }],
+    statusFn: (row) => getGlucoseStatus(row.glucose),
+  },
+  {
+    value: "spo2",
+    label: "Oxygen saturation",
+    unit: "%",
+    lines: [{ key: "spo2", name: "SpO₂", color: "#1D9E75" }],
+    statusFn: (row) => getO2Status(row.spo2),
+  },
+  {
+    value: "pulse",
+    label: "Pulse rate",
+    unit: "bpm",
+    lines: [{ key: "pulse", name: "Pulse", color: "#8B5CF6" }],
+    statusFn: (row) => getPulseStatus(row.pulse),
+  },
+];
+
 const chartProps = {
   margin:    { top: 4, right: 8, left: -16, bottom: 0 },
   className: "text-xs",
 };
 
-function BpChart({ data }: { data: ReturnType<typeof buildChartData> }) {
+/** Generic trend chart — renders whichever line(s) the selected vital needs. */
+function TrendChart({ data, lines }: { data: ChartRow[]; lines: LineConfig[] }) {
   return (
     <ResponsiveContainer width="100%" height={180}>
       <LineChart data={data} {...chartProps}>
@@ -250,26 +295,116 @@ function BpChart({ data }: { data: ReturnType<typeof buildChartData> }) {
         <YAxis tick={{ fontSize: 10 }} domain={["auto", "auto"]} />
         <Tooltip contentStyle={{ fontSize: 12 }} />
         <Legend wrapperStyle={{ fontSize: 11 }} />
-        <Line type="monotone" dataKey="sys"  name="Systolic"  stroke="#E24B4A" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-        <Line type="monotone" dataKey="dia"  name="Diastolic" stroke="#378ADD" strokeWidth={2} dot={{ r: 3 }} connectNulls />
+        {lines.map((line) => (
+          <Line
+            key={line.key}
+            type="monotone"
+            dataKey={line.key}
+            name={line.name}
+            stroke={line.color}
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            connectNulls
+          />
+        ))}
       </LineChart>
     </ResponsiveContainer>
   );
 }
 
-function GlucoseO2Chart({ data }: { data: ReturnType<typeof buildChartData> }) {
+/* ─────────────────────────────────────────────
+   Vital tabs (replaces the dropdown)
+───────────────────────────────────────────── */
+
+function VitalTabs({
+  value,
+  onChange,
+}: {
+  value: VitalOption["value"];
+  onChange: (v: VitalOption["value"]) => void;
+}) {
   return (
-    <ResponsiveContainer width="100%" height={180}>
-      <LineChart data={data} {...chartProps}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
-        <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-        <YAxis tick={{ fontSize: 10 }} domain={["auto", "auto"]} />
-        <Tooltip contentStyle={{ fontSize: 12 }} />
-        <Legend wrapperStyle={{ fontSize: 11 }} />
-        <Line type="monotone" dataKey="glucose" name="Glucose (mg/dL)" stroke="#EF9F27" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-        <Line type="monotone" dataKey="spo2"    name="SpO₂ (%)"        stroke="#1D9E75" strokeWidth={2} dot={{ r: 3 }} connectNulls />
-      </LineChart>
-    </ResponsiveContainer>
+    <div className="inline-flex flex-wrap gap-1 p-1 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-100 dark:border-slate-800">
+      {VITAL_OPTIONS.map((opt) => (
+        <button
+          key={opt.value}
+          type="button"
+          onClick={() => onChange(opt.value)}
+          className={cn(
+            "px-3 h-7 rounded-md text-xs font-medium transition-colors whitespace-nowrap",
+            value === opt.value
+              ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border border-slate-200 dark:border-slate-700"
+              : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+          )}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Stats summary (fills whitespace with real info)
+───────────────────────────────────────────── */
+
+function computeSeriesStats(data: ChartRow[], key: ChartKey) {
+  const values = data
+    .map((row) => row[key])
+    .filter((v): v is number => v !== null && v !== undefined);
+
+  if (values.length === 0) {
+    return { latest: null, avg: null, min: null, max: null };
+  }
+
+  const latest = values[values.length - 1];
+  const avg = values.reduce((a, b) => a + b, 0) / values.length;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+
+  return { latest, avg, min, max };
+}
+
+function StatsSummary({ data, option }: { data: ChartRow[]; option: VitalOption }) {
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {option.lines.map((line) => {
+        const stats = computeSeriesStats(data, line.key);
+        return (
+          <div
+            key={line.key}
+            className="rounded-lg border border-slate-100 dark:border-slate-800 p-3"
+          >
+            <div className="flex items-center gap-1.5 mb-2">
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: line.color }}
+              />
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                {line.name}
+              </span>
+            </div>
+            {stats.latest === null ? (
+              <p className="text-xs text-slate-400">No data</p>
+            ) : (
+              <>
+                <p className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none mb-2">
+                  {stats.latest}
+                  <span className="text-[11px] font-normal text-slate-400 ml-1">
+                    {option.unit}
+                  </span>
+                </p>
+                <div className="flex gap-3 text-[11px] text-slate-400">
+                  <span>Avg {stats.avg!.toFixed(1)}</span>
+                  <span>Min {stats.min}</span>
+                  <span>Max {stats.max}</span>
+                </div>
+              </>
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -280,6 +415,12 @@ function GlucoseO2Chart({ data }: { data: ReturnType<typeof buildChartData> }) {
 function ReceiverPanel({ receiver }: { receiver: ReceiverHealthData }) {
   const v = receiver.latestVitals;
   const chartData = buildChartData(receiver.visitLogs);
+  const [selectedVital, setSelectedVital] = React.useState<VitalOption["value"]>(
+    "bloodPressure"
+  );
+
+  const selectedOption =
+    VITAL_OPTIONS.find((opt) => opt.value === selectedVital) ?? VITAL_OPTIONS[0];
 
   return (
     <div className="space-y-5">
@@ -318,20 +459,23 @@ function ReceiverPanel({ receiver }: { receiver: ReceiverHealthData }) {
         />
       </div>
 
-      {/* ── Charts ── */}
+      {/* ── Interactive trend card ── */}
       {chartData.length > 1 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-4">
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-              Blood pressure trend
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-4">
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              {selectedOption.label} trend
             </p>
-            <BpChart data={chartData} />
+            <VitalTabs value={selectedVital} onChange={setSelectedVital} />
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-4">
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-              Glucose &amp; SpO₂ trend
-            </p>
-            <GlucoseO2Chart data={chartData} />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2">
+              <TrendChart data={chartData} lines={selectedOption.lines} />
+            </div>
+            <div>
+              <StatsSummary data={chartData} option={selectedOption} />
+            </div>
           </div>
         </div>
       )}
@@ -364,10 +508,7 @@ function DashboardSkeleton() {
           <div key={i} className="h-24 rounded-xl bg-slate-100 dark:bg-slate-800" />
         ))}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="h-52 rounded-xl bg-slate-100 dark:bg-slate-800" />
-        <div className="h-52 rounded-xl bg-slate-100 dark:bg-slate-800" />
-      </div>
+      <div className="h-64 rounded-xl bg-slate-100 dark:bg-slate-800" />
       <div className="h-64 rounded-xl bg-slate-100 dark:bg-slate-800" />
     </div>
   );
@@ -376,6 +517,11 @@ function DashboardSkeleton() {
 /* ─────────────────────────────────────────────
    Main dashboard
 ───────────────────────────────────────────── */
+
+interface HealthDashboardProps {
+  /** Pass clientId for admin view. Omit for client's own dashboard. */
+  clientId?: string;
+}
 
 export function HealthDashboard({ clientId }: HealthDashboardProps) {
   const [activeReceiverId, setActiveReceiverId] = React.useState<string | null>(null);
