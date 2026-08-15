@@ -293,7 +293,7 @@ export function CareReceiverList() {
                                                 }}
                                             >
                                                 <Trash2 className="w-3.5 h-3.5" />
-                                                Delete Client
+                                                Delete Care Receiver
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
