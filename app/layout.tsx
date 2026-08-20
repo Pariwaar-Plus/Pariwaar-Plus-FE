@@ -1,12 +1,10 @@
 // app/layout.tsx
 import "@/app/globals.css";
-import { Geist,DM_Sans,Playfair_Display } from "next/font/google";
-import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { QueryProvider } from "@/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider } from "@/features/auth/providers/auth-provider";
-import { AuthGuard } from "@/features/auth/guards/auth-guard";
+import { cn } from "@/lib/utils";
+import { QueryProvider } from "@/providers/query-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { DM_Sans, Geist, Playfair_Display } from "next/font/google";
 
 // ─────────────────────────────────────────────────────
 // Fonts
@@ -33,8 +31,8 @@ const playfair = Playfair_Display({
 // ─────────────────────────────────────────────────────
 
 export const metadata = {
-  title: "CareConnect | Assignment System",
-  description: "Management system for Care Agents and Receivers",
+  title: "Pariwaar Plus",
+  description: "Fully Managed Care Coordination",
 };
 
 // ─────────────────────────────────────────────────────
