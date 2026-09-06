@@ -4,6 +4,7 @@ import { useAuthStore, selectUser } from "@/features/auth/store/auth.store";
 import { UserButton } from "./user-button";
 import { Bell, Shield, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "./NotificationBell";
 
 
 const ROLE_CONFIG: Record<string, { label: string; color: string; bg: string; dot: string }> = {
@@ -48,6 +49,7 @@ export default function Navbar() {
     const displayName = user?.name?.split(" ")[0] || "there";
     const role = user?.role as keyof typeof ROLE_CONFIG | undefined;
     const roleConfig = role ? ROLE_CONFIG[role] : null;
+    const notificationCount = user?.notificationsCount || 0
 
     // Random stable status message for admin (stable across renders)
     const adminMsg = ADMIN_STATUS_MESSAGES[0];
@@ -106,14 +108,8 @@ export default function Navbar() {
                     </div>
 
                     {/* Notification bell */}
-                    <button
-                        className="relative flex items-center justify-center w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-                        aria-label="Notifications"
-                    >
-                        <Bell className="w-4 h-4" />
-                        {/* Notification dot */}
-                        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 border-2 border-white dark:border-slate-800" />
-                    </button>
+                    <NotificationBell notificationCount={notificationCount}/>
+                    
 
                     {/* Divider */}
                     <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />

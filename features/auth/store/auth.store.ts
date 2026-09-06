@@ -22,6 +22,7 @@ export interface User {
     email: string;
     name?: string;
     role?: string;
+    notificationsCount?:number
 }
 
 export interface LoginCredentials {
