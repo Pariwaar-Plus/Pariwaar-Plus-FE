@@ -154,7 +154,7 @@ export function NotificationBell({ notificationCount }: { notificationCount: num
                   <DropdownMenuLabel key={notification.id}>
                     <div className="flex flex-1 items-start justify-between gap-2">
                       <div className="flex flex-col gap-px min-w-0">
-                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate leading-tight">
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 leading-tight">
                           {notification.content}
                         </p>
                         <p className="text-[11px] text-slate-400 dark:text-slate-500 truncate mt-0.5">
