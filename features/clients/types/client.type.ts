@@ -1,3 +1,4 @@
+import { User } from "@/features/auth/types/auth.type";
 import { CareReceiver } from "@/features/care-receiver/types/care-receiver.type";
 
 
@@ -31,6 +32,14 @@ export interface Client {
     careReceivers: CareReceiver[];
 
     // Meta
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ClientOut {
+    id: string;
+    userId: string;
+    user: User
     createdAt: string;
     updatedAt: string;
 }

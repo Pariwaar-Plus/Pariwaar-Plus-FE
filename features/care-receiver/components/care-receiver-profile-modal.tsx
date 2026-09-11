@@ -11,7 +11,7 @@ import {
     Heart,
     Users,
     AlertCircle,
-    X,
+    Mail,
     ClipboardList,
 } from "lucide-react";
 
@@ -431,23 +431,31 @@ function ProfileContent({
 
                     <div>
                         <SectionLabel>
-                            Emergency Contact
+                            Associated Client
                         </SectionLabel>
 
                         <div className="bg-white rounded-xl border px-4">
                             <InfoRow
                                 icon={User}
-                                label="Contact Name"
+                                label="Name"
                                 value={
-                                    receiver.emergencyContactName
+                                    receiver.client.user.name
+                                }
+                            />
+
+                            <InfoRow
+                                icon={Mail}
+                                label="Email"
+                                value={
+                                    receiver.client.user.email
                                 }
                             />
 
                             <InfoRow
                                 icon={Phone}
-                                label="Contact Phone"
+                                label="Phone"
                                 value={
-                                    receiver.emergencyContactPhone
+                                    receiver.client.user.phone
                                 }
                             />
                         </div>
@@ -462,7 +470,7 @@ function ProfileContent({
                             <span
                                 className={cn(
                                     "inline-flex items-center px-2 py-1 rounded-md border text-xs font-medium",
-                                    "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                    "bg-emerald-50 text-emerald-700 border-emerald-200 mr-1"
                                 )}
                                 key={careAgent.id}
                             >

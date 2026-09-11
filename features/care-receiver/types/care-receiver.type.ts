@@ -1,4 +1,5 @@
 import { CareAssignment } from "@/features/care-assignment/types/care-assignment.type";
+import { Client, ClientOut } from "@/features/clients/types/client.type";
 
 export type MobilityStatus =
     | "INDEPENDENT"
@@ -9,6 +10,7 @@ export type MobilityStatus =
 export interface CareReceiver {
     id: string;
     clientId: string;
+    client: ClientOut
 
     // Personal
     name: string;
