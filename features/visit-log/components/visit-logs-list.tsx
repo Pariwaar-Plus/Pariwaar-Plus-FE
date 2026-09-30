@@ -22,13 +22,14 @@ import { Button } from "@/components/ui/button";
 import { getCareReceivers } from "@/features/care-receiver/api/care-receiver.api";
 import { getCareAgents } from "@/features/sahara-staff/api/care-agent.api";
 import { format } from "date-fns";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { deleteVisitLog, getVisitLogs } from "../api/visit-log.api";
 import { VisitLog, VisitStatus } from "../types/visit-log.type";
 import { EditVistLogSheet } from "./edit-visit-log-sheet";
 import { VisitDetailView } from "./single-visit-log-modal";
 import VisitLogFilters from "./VisitLogFilters";
+import { createVideoCall } from "../../video-call/api/video-call.api";
 // import { VisitLogModal } from "./visit-log-modal";
 
 /* ─────────────────────────────────────────────
@@ -114,6 +115,7 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
 export function VisitLogsList() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
 
   const careAgentId = searchParams.get("careAgentId") ?? "";
@@ -163,6 +165,13 @@ export function VisitLogsList() {
         error.message
       );
     }
+  });
+
+  const createCallMutation = useMutation({
+    mutationFn: createVideoCall,
+    onSuccess: ({ roomId }) => {
+      router.push(`/video-call/${roomId}`);
+    },
   });
 
 
@@ -218,6 +227,8 @@ export function VisitLogsList() {
             placeholder="Search by agent or receiver name…"
             className="max-w-md"
           />
+          <Button className="cursor-pointer" onClick={() => createCallMutation.mutate()}
+            disabled={createCallMutation.isPending} >Create call</Button>
           <Button
             variant="outline"
             onClick={() => setOpenFilters(true)}
