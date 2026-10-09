@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@daily-co/daily-js": "^0.92.2",
+    "@daily-co/daily-react": "^0.26.0",
     "@hookform/resolvers": "^5.4.0",
+    "@jitsi/react-sdk": "^1.4.4",
     "@tanstack/react-query": "^5.100.10",
     "axios": "^1.16.1",
     "class-variance-authority": "^0.7.1",

@@ -3,6 +3,10 @@ import api, { ApiResponse } from "@/lib/axios";
 interface VideoCall {
     roomId: string
     joinUrl: string
+    room:string,
+    jwt:string,
+    appId:string
+
 }
 
 export async function createVideoCall() {
