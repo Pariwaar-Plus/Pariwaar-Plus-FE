@@ -1,6 +1,6 @@
-import { Badge } from "@/components/reui/badge"
+import { Badge } from "@/components/reui/badge";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,11 +9,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { BellIcon, BellOff } from 'lucide-react'
-import { useState } from "react"
-import { getNotifications, markAllNotificationsAsRead, updateNotification } from "./api/notification.api"
+} from "@/components/ui/dropdown-menu";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { BellIcon, BellOff } from "lucide-react";
+import { useState } from "react";
+import { useAuthStore } from "@/features/auth/store/auth.store";
+import {
+  getNotifications,
+  markAllNotificationsAsRead,
+  updateNotification,
+} from "./api/notification.api";
 
 function getTimeAgo(date: Date | string | number): string {
   const past = new Date(date).getTime();
@@ -21,34 +26,30 @@ function getTimeAgo(date: Date | string | number): string {
   const secondsAgo = Math.floor((now - past) / 1000);
 
   if (secondsAgo < 5) {
-    return 'Just now';
+    return "Just now";
   } else if (secondsAgo < 60) {
     return `${secondsAgo} secs ago`;
   }
 
   const minutesAgo = Math.floor(secondsAgo / 60);
   if (minutesAgo < 60) {
-    return `${minutesAgo} min${minutesAgo > 1 ? 's' : ''} ago`;
+    return `${minutesAgo} min${minutesAgo > 1 ? "s" : ""} ago`;
   }
 
   const hoursAgo = Math.floor(minutesAgo / 60);
   if (hoursAgo < 24) {
-    return `${hoursAgo} hr${hoursAgo > 1 ? 's' : ''} ago`;
+    return `${hoursAgo} hr${hoursAgo > 1 ? "s" : ""} ago`;
   }
 
   const daysAgo = Math.floor(hoursAgo / 24);
-  return `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
+  return `${daysAgo} day${daysAgo > 1 ? "s" : ""} ago`;
 }
-
 
 export function NotificationLoading() {
   return (
     <div className="flex flex-col gap-3 p-4 w-[320px]">
       {[1, 2, 3].map((item) => (
-        <div
-          key={item}
-          className="flex items-start gap-3 animate-pulse"
-        >
+        <div key={item} className="flex items-start gap-3 animate-pulse">
           <div className="h-9 w-9 rounded-full bg-muted" />
 
           <div className="flex-1 space-y-2">
@@ -70,22 +71,29 @@ export function NoNotifications() {
 
       <div>
         <p className="font-medium">No notifications</p>
-        <p className="text-sm text-muted-foreground">
-          You're all caught up!
-        </p>
+        <p className="text-sm text-muted-foreground">You're all caught up!</p>
       </div>
     </div>
   );
 }
 
-export function NotificationBell({ notificationCount }: { notificationCount: number }) {
-
+export function NotificationBell({
+  notificationCount,
+}: {
+  notificationCount: number;
+}) {
   const [open, setOpen] = useState(false);
+  const decrementNotificationsCount = useAuthStore(
+    (state) => state.decrementNotificationsCount,
+  );
+  const clearNotificationsCount = useAuthStore(
+    (state) => state.clearNotificationsCount,
+  );
 
   const {
     data: notifications,
     refetch,
-    isLoading
+    isLoading,
   } = useQuery({
     queryKey: ["notifications"],
     queryFn: getNotifications,
@@ -94,14 +102,19 @@ export function NotificationBell({ notificationCount }: { notificationCount: num
 
   const { mutate: markAsRead } = useMutation({
     mutationFn: (id: string) => updateNotification(id, { hasRead: true }),
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      decrementNotificationsCount();
+      refetch();
+    },
   });
 
   const { mutate: markAllAsRead } = useMutation({
     mutationFn: () => markAllNotificationsAsRead(),
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      clearNotificationsCount();
+      refetch();
+    },
   });
-
 
   const handleOpenChange = async (isOpen: boolean) => {
     setOpen(isOpen);
@@ -115,8 +128,12 @@ export function NotificationBell({ notificationCount }: { notificationCount: num
     <div className="flex items-center justify-center">
       <DropdownMenu open={open} onOpenChange={handleOpenChange}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="relative flex items-center justify-center w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-            aria-label="Notifications" >
+          <Button
+            variant="outline"
+            size="icon"
+            className="relative flex items-center justify-center w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+            aria-label="Notifications"
+          >
             <BellIcon aria-hidden="true" className="w-4 h-4" />
             <Badge
               variant="destructive"
@@ -132,16 +149,17 @@ export function NotificationBell({ notificationCount }: { notificationCount: num
           <DropdownMenuGroup>
             <DropdownMenuLabel className="flex items-center justify-between">
               <span>Notifications</span>
-              {(notifications && notifications?.length > 0) &&
-                <button className="text-foreground text-xs font-normal underline-offset-2 hover:underline"
+              {notifications && notifications?.length > 0 && (
+                <button
+                  className="text-foreground text-xs font-normal underline-offset-2 hover:underline"
                   onClick={(e) => {
                     e.stopPropagation();
                     markAllAsRead();
                   }}
                 >
                   Mark all as read
-                </button>}
-
+                </button>
+              )}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -180,10 +198,9 @@ export function NotificationBell({ notificationCount }: { notificationCount: num
                 ))
               )}
             </DropdownMenuGroup>
-
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
+  );
 }

@@ -1,8 +1,11 @@
 "use client";
 
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,17 +16,23 @@ import {
   Eye,
   MoreHorizontal,
   Pencil,
-  Repeat
+  Repeat,
 } from "lucide-react";
 import * as React from "react";
 
-
 import { SearchFilter } from "@/components/shared/filter/search-filter.component";
 import { VisitHistoryModal } from "@/features/visit-log/components/visit-history-modal";
-import { deleteCareAssignment, getMyAssignments } from "../api/care-assignment.api";
-import { AssignmentStatus, CareAssignment, VisitFrequency } from "../types/care-assignment.type";
+import {
+  deleteCareAssignment,
+  getMyAssignments,
+} from "../api/care-assignment.api";
+import {
+  AssignmentStatus,
+  CareAssignment,
+  VisitFrequency,
+} from "../types/care-assignment.type";
 import { EditAssignmentSheet } from "./edit-assignment-sheet";
-import { format } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 import { DeleteConfirmDialog } from "@/components/shared/dialogs/delete-confirm-dialogue.component";
 import { toast } from "sonner";
 import { VisitLogsList } from "@/features/visit-log/components/visit-logs-list";
@@ -34,17 +43,41 @@ import { useRouter } from "next/navigation";
    Badges
 ───────────────────────────────────────────── */
 
-const STATUS_MAP: Record<AssignmentStatus, { label: string; className: string }> = {
-  ACTIVE: { label: "Active", className: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800" },
-  ON_HOLD: { label: "On Hold", className: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800" },
-  COMPLETED: { label: "Completed", className: "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700" },
-  CANCELLED: { label: "Cancelled", className: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800" },
+const STATUS_MAP: Record<
+  AssignmentStatus,
+  { label: string; className: string }
+> = {
+  ACTIVE: {
+    label: "Active",
+    className:
+      "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800",
+  },
+  ON_HOLD: {
+    label: "On Hold",
+    className:
+      "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800",
+  },
+  COMPLETED: {
+    label: "Completed",
+    className:
+      "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
+  },
+  CANCELLED: {
+    label: "Cancelled",
+    className:
+      "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800",
+  },
 };
 
 function StatusBadge({ status }: { status: AssignmentStatus }) {
   const { label, className } = STATUS_MAP[status] ?? STATUS_MAP.ACTIVE;
   return (
-    <span className={cn("inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border", className)}>
+    <span
+      className={cn(
+        "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border",
+        className,
+      )}
+    >
       {label}
     </span>
   );
@@ -58,6 +91,16 @@ const FREQUENCY_LABEL: Record<VisitFrequency, string> = {
   ON_DEMAND: "On demand",
 };
 
+function parseAssignmentDate(value: string | Date | null | undefined) {
+  const date =
+    value instanceof Date
+      ? value
+      : typeof value === "string"
+        ? parseISO(value)
+        : null;
+  return date && isValid(date) ? date : null;
+}
+
 function FrequencyBadge({ frequency }: { frequency: VisitFrequency }) {
   return (
     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
@@ -67,7 +110,6 @@ function FrequencyBadge({ frequency }: { frequency: VisitFrequency }) {
   );
 }
 
-
 /* ─────────────────────────────────────────────
    Skeleton / Empty
 ───────────────────────────────────────────── */
@@ -76,7 +118,10 @@ function ListSkeleton() {
   return (
     <div className="divide-y divide-slate-100 dark:divide-slate-800">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-4 py-3.5 animate-pulse">
+        <div
+          key={i}
+          className="flex items-center gap-4 px-4 py-3.5 animate-pulse"
+        >
           <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0" />
           <div className="flex-1 space-y-1.5">
             <div className="h-3 w-32 rounded bg-slate-100 dark:bg-slate-800" />
@@ -101,7 +146,9 @@ function EmptyState({ hasSearch }: { hasSearch: boolean }) {
         {hasSearch ? "No assignments match your search" : "No assignments yet"}
       </p>
       <p className="text-xs text-slate-400 mt-1">
-        {hasSearch ? "Try a different agent or receiver name." : "Assign a care agent from a care receiver's profile."}
+        {hasSearch
+          ? "Try a different agent or receiver name."
+          : "Assign a care agent from a care receiver's profile."}
       </p>
     </div>
   );
@@ -122,7 +169,11 @@ export function AssignmentList() {
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [isVisitLogOpen, setIsVisitLogOpen] = React.useState(false);
 
-  const { data: assignments = [], isLoading, isError } = useQuery({
+  const {
+    data: assignments = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["care-assignments"],
     queryFn: getMyAssignments,
   });
@@ -144,7 +195,7 @@ export function AssignmentList() {
 
       queryClient.setQueryData<CareAssignment[]>(
         ["care-assignments"],
-        (old = []) => old.filter((r) => r.id !== id)
+        (old = []) => old.filter((r) => r.id !== id),
       );
 
       return { previous };
@@ -165,19 +216,15 @@ export function AssignmentList() {
     },
   });
 
-
-
   const filtered = React.useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return assignments;
-    return assignments.filter((a) =>
-      // a.careAgentName.toLowerCase().includes(term) ||
-      // a.careReceiverName.toLowerCase().includes(term)
-      a
+    return assignments.filter(
+      (a) =>
+        a.careAgent?.user.name.toLowerCase().includes(term) ||
+        a.careReceiver?.name.toLowerCase().includes(term),
     );
   }, [assignments, search]);
-
-
 
   const handleCloseEdit = () => {
     setIsEditOpen(false);
@@ -226,18 +273,35 @@ export function AssignmentList() {
             </div>
 
             {filtered.map((a) => {
-              const agentInitials = a.careAgent?.user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
-              const receiverInitials = a.careReceiver?.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
-              const nextVisitLabel = a.schedule.nextVisit
-                ? new Date(a.schedule.nextVisit).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+              const agentInitials = a.careAgent?.user.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
+              const receiverInitials = a.careReceiver?.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
+              const startDate = parseAssignmentDate(a.schedule.startDate);
+              const endDate = parseAssignmentDate(a.schedule.endDate);
+              const nextVisit = parseAssignmentDate(a.schedule.nextVisit);
+              const nextVisitLabel = nextVisit
+                ? nextVisit.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
                 : "—";
 
               return (
-                <div key={a.id} className="border-t border-slate-100 dark:border-slate-800">
+                <div
+                  key={a.id}
+                  className="border-t border-slate-100 dark:border-slate-800"
+                >
                   {/* Row */}
-                  <div
-                    className="group grid grid-cols-[1.6fr_1.6fr_1.6fr_0.9fr_0.9fr_0.9fr_40px] gap-2 px-4 py-3.5 items-center hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
-                  >
+                  <div className="group grid grid-cols-[1.6fr_1.6fr_1.6fr_0.9fr_0.9fr_0.9fr_40px] gap-2 px-4 py-3.5 items-center hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer">
                     {/* Care Agent */}
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-400 flex items-center justify-center text-xs font-bold shrink-0">
@@ -247,7 +311,9 @@ export function AssignmentList() {
                         <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
                           {a.careAgent?.user.name}
                         </p>
-                        <p className="text-xs text-slate-400 truncate">{a.careAgent?.employeeId}</p>
+                        <p className="text-xs text-slate-400 truncate">
+                          {a.careAgent?.employeeId}
+                        </p>
                       </div>
                     </div>
 
@@ -260,22 +326,29 @@ export function AssignmentList() {
                         <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
                           {a.careReceiver?.name}
                         </p>
-                        <p className="text-xs text-slate-400 truncate">{a.careReceiver?.city}</p>
+                        <p className="text-xs text-slate-400 truncate">
+                          {a.careReceiver?.city}
+                        </p>
                       </div>
                     </div>
 
                     {/* Period */}
                     <div className="flex items-center gap-3 min-w-0">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
-                        {format(a.schedule.startDate, 'd MMM yyyy')}{a.schedule.endDate ? ` - ${format(a.schedule.endDate, "d MMM yyyy")}` : "-"}
+                        {startDate ? format(startDate, "d MMM yyyy") : "-"}
+                        {endDate ? ` - ${format(endDate, "d MMM yyyy")}` : "-"}
                       </p>
                     </div>
 
                     {/* Frequency */}
-                    <div><FrequencyBadge frequency={a.schedule.frequency} /></div>
+                    <div>
+                      <FrequencyBadge frequency={a.schedule.frequency} />
+                    </div>
 
                     {/* Status */}
-                    <div><StatusBadge status={a.status} /></div>
+                    <div>
+                      <StatusBadge status={a.status} />
+                    </div>
 
                     {/* Next visit */}
                     <div className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
@@ -284,7 +357,10 @@ export function AssignmentList() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className="flex items-center justify-end gap-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       {/* <ChevronDown className={cn(
                         "w-4 h-4 text-slate-400 transition-transform",
                         isExpanded && "rotate-180"
@@ -295,12 +371,15 @@ export function AssignmentList() {
                             <MoreHorizontal className="w-4 h-4" />
                           </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-44 p-1 shadow-lg border-slate-200 dark:border-slate-700">
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-44 p-1 shadow-lg border-slate-200 dark:border-slate-700"
+                        >
                           <DropdownMenuItem
                             className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
                             onClick={() => {
                               router.push(
-                                `/dashboard/admin/visit-logs?careAgentId=${a.careAgentId}&careReceiverId=${a.careReceiverId}`
+                                `/dashboard/admin/visit-logs?careAgentId=${a.careAgentId}&careReceiverId=${a.careReceiverId}`,
                               );
                               // <VisitLogsList careAgentId={a.careAgentId} careReceiverId={a.careReceiverId} />
                             }}
@@ -334,8 +413,6 @@ export function AssignmentList() {
                       </DropdownMenu>
                     </div>
                   </div>
-
-
                 </div>
               );
             })}
@@ -371,7 +448,11 @@ export function AssignmentList() {
         onOpenChange={setIsDeleteOpen}
         title="Cancel Assignment"
         description="This will mark the assignment as cancelled. Future scheduled visits will not be generated."
-        itemName={selected ? `${selected.careAgent?.user.name} → ${selected.careReceiver?.name}` : ""}
+        itemName={
+          selected
+            ? `${selected.careAgent?.user.name} → ${selected.careReceiver?.name}`
+            : ""
+        }
         loading={deleteMutation.isPending}
         onConfirm={() => deleteMutation.mutate(selected!.id)}
       />
