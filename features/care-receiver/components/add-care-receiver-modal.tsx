@@ -238,7 +238,7 @@ export function AddCareReceiverModal({
                   <FormItem>
                     <FormLabel>Ward No</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="07" />
+                      <Input {...field} placeholder="7" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

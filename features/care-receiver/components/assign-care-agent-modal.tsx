@@ -115,6 +115,9 @@ export function ManageCareAgentsModal({
       queryClient.invalidateQueries({
         queryKey: ["care-assignments-for-care-receiver", careReceiverId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["care-receivers"],
+      });
 
       reset();
       // onOpenChange(false);
@@ -132,6 +135,9 @@ export function ManageCareAgentsModal({
 
       queryClient.invalidateQueries({
         queryKey: ["care-assignments-for-care-receiver", careReceiverId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["care-receivers"],
       });
     },
 

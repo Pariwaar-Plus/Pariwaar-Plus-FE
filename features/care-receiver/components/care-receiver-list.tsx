@@ -12,6 +12,12 @@ import { format } from "date-fns";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   DropdownMenu,
@@ -25,12 +31,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   Eye,
+  FolderKanban,
   HeartPlus,
   MapPin,
   MoreHorizontal,
   Pencil,
   Trash2,
   User,
+  Users,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -47,6 +55,15 @@ import { SearchFilter } from "@/components/shared/filter/search-filter.component
 import { EditCareReceiverSheet } from "../components/edit-care-receiver-sheet";
 import { ManageCareAgentsModal } from "./assign-care-agent-modal";
 import { CareReceiverProfileModal } from "./care-receiver-profile-modal";
+
+const AssignedAgentBadgeColors = [
+  "bg-green-700",
+  "bg-blue-700",
+  "bg-purple-700",
+  "bg-orange-600",
+  "bg-pink-700",
+  "bg-teal-700",
+];
 
 export function CareReceiverList() {
   const queryClient = useQueryClient();
@@ -115,6 +132,8 @@ export function CareReceiverList() {
     );
   }, [receivers, search]);
 
+  console.log("r : ", filteredReceivers);
+
   /* ---------------- HANDLERS ---------------- */
   const handleCloseEdit = () => {
     setIsEditOpen(false);
@@ -167,6 +186,7 @@ export function CareReceiverList() {
               <TableHead>DOB</TableHead>
               <TableHead>Location</TableHead>
               <TableHead>Medical</TableHead>
+              <TableHead>Assigned Agents</TableHead>
               {/* <TableHead>Status</TableHead> */}
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -218,6 +238,66 @@ export function CareReceiverList() {
                   </div>
                 </TableCell>
 
+                {/* Assigned Agents */}
+                <TableCell>
+                  {r.assignments?.length ? (
+                    <div className="flex flex-wrap items-center gap-1">
+                      {r.assignments.slice(0, 2).map((assignment, index) => (
+                        <Badge
+                          key={assignment.id}
+                          variant="default"
+                          className={`${AssignedAgentBadgeColors[index % AssignedAgentBadgeColors.length]} text-white`}
+                        >
+                          {assignment.careAgent?.user.name ?? "Unknown agent"}
+                        </Badge>
+                      ))}
+                      {r.assignments.length > 2 && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div
+                                onClick={() => {
+                                  setSelectedReceiver(r);
+                                  setIsAssignAgentOpen(true);
+                                }}
+                                className="cursor-pointer inline-flex items-center justify-center h-8 w-8 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Assign agents"
+                              >
+                                <Users className="h-4 w-4" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Click to manage agent
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
+                  ) : (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            onClick={() => {
+                              setSelectedReceiver(r);
+                              setIsAssignAgentOpen(true);
+                            }}
+                            className="cursor-pointer inline-flex items-center justify-center h-8 w-8 rounded-md bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Assign agents"
+                          >
+                            <Users className="h-4 w-4" />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>Click to manage agent</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </TableCell>
+
                 {/* STATUS */}
                 {/* <TableCell>
                                     <Badge
@@ -264,7 +344,7 @@ export function CareReceiverList() {
                         Edit Details
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem
+                      {/* <DropdownMenuItem
                         className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm text-emerald-700 dark:text-slate-300 cursor-pointer"
                         onClick={() => {
                           setSelectedReceiver(r);
@@ -273,7 +353,7 @@ export function CareReceiverList() {
                       >
                         <HeartPlus className="w-3.5 h-3.5 text-emerald-700" />
                         Manage Care Agent
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
 
                       <DropdownMenuSeparator className="my-1 bg-slate-100 dark:bg-slate-800" />
 
