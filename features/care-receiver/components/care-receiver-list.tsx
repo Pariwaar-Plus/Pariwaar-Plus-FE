@@ -251,7 +251,7 @@ export function CareReceiverList() {
                           {assignment.careAgent?.user.name ?? "Unknown agent"}
                         </Badge>
                       ))}
-                      {r.assignments.length > 2 && (
+                      {r.assignments.length > 0 && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
