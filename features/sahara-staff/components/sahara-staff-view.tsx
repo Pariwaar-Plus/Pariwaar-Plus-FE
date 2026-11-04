@@ -13,22 +13,20 @@ export function CareAgentsView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Sahara Staff
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight">Sahara Staff</h2>
           <p className="text-muted-foreground">
             Manage and assign care agents efficiently.
           </p>
         </div>
 
-        <AddActionButton label="Add Sahara Staff" onClick={() => setOpen(true)} />
+        <AddActionButton
+          label="Add Sahara Staff"
+          onClick={() => setOpen(true)}
+        />
       </div>
 
       {/* Add Modal */}
-      <AddSaharaModal
-        open={open}
-        onOpenChange={setOpen}
-      />
+      <AddSaharaModal open={open} onOpenChange={setOpen} />
 
       {/* Table (React Query owns data inside this) */}
       <AgentList />

@@ -40,6 +40,8 @@ interface AuthState {
     login: (credentials: LoginCredentials) => Promise<void>;
     logout: () => Promise<void>;
     hydrate: () => Promise<void>;
+    decrementNotificationsCount: () => void;
+    clearNotificationsCount: () => void;
     reset: () => void;
 }
 
@@ -153,6 +155,28 @@ export const useAuthStore = create<AuthState>()(
 
                 hydratedOnce = true;
                 return hydratePromise;
+            },
+
+            decrementNotificationsCount: () => {
+                set((state) => ({
+                    user: state.user
+                        ? {
+                              ...state.user,
+                              notificationsCount: Math.max(
+                                  (state.user.notificationsCount ?? 0) - 1,
+                                  0,
+                              ),
+                          }
+                        : null,
+                }));
+            },
+
+            clearNotificationsCount: () => {
+                set((state) => ({
+                    user: state.user
+                        ? { ...state.user, notificationsCount: 0 }
+                        : null,
+                }));
             },
 
             // ── RESET ──────────────────────────────

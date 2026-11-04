@@ -170,9 +170,8 @@ export function CareAgentAssignmentList({ assignments, isLoading, isError }: { a
     if (!term) return assignments;
     return assignments.filter(
       (a) =>
-        // a.careAgentName.toLowerCase().includes(term) ||
-        // a.careReceiverName.toLowerCase().includes(term)
-        a,
+        a.careAgent?.user.name.toLowerCase().includes(term) ||
+        a.careReceiver?.name.toLowerCase().includes(term),
     );
   }, [assignments, search]);
 

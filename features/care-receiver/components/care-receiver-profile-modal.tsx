@@ -465,14 +465,14 @@ function ProfileContent({
                         <SectionLabel>
                             Assigned Care Agents
                         </SectionLabel>
-                        {receiver.assignments?.map((careAgent) => (
+                        {receiver.assignments?.map((careAgent, index) => (
 
                             <span
                                 className={cn(
                                     "inline-flex items-center px-2 py-1 rounded-md border text-xs font-medium",
                                     "bg-emerald-50 text-emerald-700 border-emerald-200 mr-1"
                                 )}
-                                key={careAgent.id}
+                                key={`${careAgent.id}-${index}`}
                             >
                                 {careAgent.careAgent?.user.name}
                             </span>

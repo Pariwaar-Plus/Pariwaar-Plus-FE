@@ -5,9 +5,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  User, Mail, Phone, Lock, Calendar,
-  GraduationCap, Briefcase, MapPin, UserPlus,
-  Loader2, X, BadgeCheck, FileText, Navigation,
+  User,
+  Mail,
+  Phone,
+  Lock,
+  Calendar,
+  GraduationCap,
+  Briefcase,
+  MapPin,
+  UserPlus,
+  Loader2,
+  X,
+  BadgeCheck,
+  FileText,
+  Navigation,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -139,19 +150,22 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-130 p-0 gap-0 overflow-hidden">
-
         {/* ── Header ── */}
         <DialogHeader className="px-6 pt-6 pb-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center shrink-0">
-              <UserPlus size={18} className="text-emerald-600 dark:text-emerald-400" />
+              <UserPlus
+                size={18}
+                className="text-emerald-600 dark:text-emerald-400"
+              />
             </div>
             <div>
               <DialogTitle className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-tight">
                 Add New Sahara Staff
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400 mt-0.5">
-                A welcome email with login credentials will be sent after registration.
+                A welcome email with login credentials will be sent after
+                registration.
               </DialogDescription>
             </div>
           </div>
@@ -165,7 +179,6 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4"
             >
-
               {/* ── Account Info ── */}
               <SectionLabel>Account Information</SectionLabel>
 
@@ -177,7 +190,11 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                     <FormLabel className={labelClass}>Full Name</FormLabel>
                     <FormControl>
                       <FieldWithIcon icon={User}>
-                        <Input {...field} className={inputClass} placeholder="Full name" />
+                        <Input
+                          {...field}
+                          className={inputClass}
+                          placeholder="Full name"
+                        />
                       </FieldWithIcon>
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -194,7 +211,12 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                       <FormLabel className={labelClass}>Email</FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={Mail}>
-                          <Input {...field} type="email" className={inputClass} placeholder="email@example.com" />
+                          <Input
+                            {...field}
+                            type="email"
+                            className={inputClass}
+                            placeholder="email@example.com"
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -209,7 +231,12 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                       <FormLabel className={labelClass}>Password</FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={Lock}>
-                          <Input {...field} type="password" className={inputClass} placeholder="Min. 8 characters" />
+                          <Input
+                            {...field}
+                            type="password"
+                            className={inputClass}
+                            placeholder="Min. 6 characters"
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -224,10 +251,16 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>Primary Phone</FormLabel>
+                      <FormLabel className={labelClass}>
+                        Primary Phone
+                      </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={Phone}>
-                          <Input {...field} className={inputClass} placeholder="+977 98XXXXXXXX" />
+                          <Input
+                            {...field}
+                            className={inputClass}
+                            placeholder="+977 98XXXXXXXX"
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -241,11 +274,17 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                     <FormItem>
                       <FormLabel className={labelClass}>
                         Secondary Phone{" "}
-                        <span className="text-slate-300 dark:text-slate-600 font-normal">(optional)</span>
+                        <span className="text-slate-300 dark:text-slate-600 font-normal">
+                          (optional)
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={Phone}>
-                          <Input {...field} className={inputClass} placeholder="+977 98XXXXXXXX" />
+                          <Input
+                            {...field}
+                            className={inputClass}
+                            placeholder="+977 98XXXXXXXX"
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -264,7 +303,10 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={labelClass}>Gender</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger className={inputClass}>
                             <SelectValue placeholder="Select gender" />
@@ -285,10 +327,16 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   name="dateOfBirth"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>Date of Birth</FormLabel>
+                      <FormLabel className={labelClass}>
+                        Date of Birth
+                      </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={Calendar}>
-                          <Input {...field} type="date" className={inputClass} />
+                          <Input
+                            {...field}
+                            type="date"
+                            className={inputClass}
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -306,10 +354,16 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   name="citizenshipNo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>Citizenship No.</FormLabel>
+                      <FormLabel className={labelClass}>
+                        Citizenship No.
+                      </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={BadgeCheck}>
-                          <Input {...field} className={inputClass} placeholder="e.g. 12-34-56-78901" />
+                          <Input
+                            {...field}
+                            className={inputClass}
+                            placeholder="e.g. 12-34-56-78901"
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -323,11 +377,17 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                     <FormItem>
                       <FormLabel className={labelClass}>
                         License No.{" "}
-                        <span className="text-slate-300 dark:text-slate-600 font-normal">(optional)</span>
+                        <span className="text-slate-300 dark:text-slate-600 font-normal">
+                          (optional)
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={FileText}>
-                          <Input {...field} className={inputClass} placeholder="e.g. NMC-XXXXX" />
+                          <Input
+                            {...field}
+                            className={inputClass}
+                            placeholder="e.g. NMC-XXXXX"
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -345,10 +405,16 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   name="qualification"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>Qualification</FormLabel>
+                      <FormLabel className={labelClass}>
+                        Qualification
+                      </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={GraduationCap}>
-                          <Input {...field} className={inputClass} placeholder="e.g. BSc Nursing" />
+                          <Input
+                            {...field}
+                            className={inputClass}
+                            placeholder="e.g. BSc Nursing"
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -360,7 +426,9 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   name="experience"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>Experience (Years)</FormLabel>
+                      <FormLabel className={labelClass}>
+                        Experience (Years)
+                      </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={Briefcase}>
                           <Input
@@ -388,7 +456,9 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   <FormItem>
                     <FormLabel className={labelClass}>
                       Specializations{" "}
-                      <span className="text-slate-300 dark:text-slate-600 font-normal">(optional)</span>
+                      <span className="text-slate-300 dark:text-slate-600 font-normal">
+                        (optional)
+                      </span>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -414,7 +484,11 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                       <FormLabel className={labelClass}>City</FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={MapPin}>
-                          <Input {...field} className={inputClass} placeholder="Baneshwor" />
+                          <Input
+                            {...field}
+                            className={inputClass}
+                            placeholder="Baneshwor"
+                          />
                         </FieldWithIcon>
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -426,11 +500,13 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   name="district"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={labelClass}>
-                        District{" "}
-                      </FormLabel>
+                      <FormLabel className={labelClass}>District </FormLabel>
                       <FormControl>
-                        <Input {...field} className={inputClass} placeholder="Kathmandu" />
+                        <Input
+                          {...field}
+                          className={inputClass}
+                          placeholder="Kathmandu"
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -446,7 +522,11 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                     <FormItem>
                       <FormLabel className={labelClass}>Ward</FormLabel>
                       <FormControl>
-                        <Input {...field} className={inputClass} placeholder="7" />
+                        <Input
+                          {...field}
+                          className={inputClass}
+                          placeholder="7"
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -459,7 +539,11 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                     <FormItem>
                       <FormLabel className={labelClass}>Tole</FormLabel>
                       <FormControl>
-                        <Input {...field} className={inputClass} placeholder="Chabahil" />
+                        <Input
+                          {...field}
+                          className={inputClass}
+                          placeholder="Chabahil"
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -475,7 +559,9 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                     <FormItem>
                       <FormLabel className={labelClass}>
                         Latitude{" "}
-                        <span className="text-slate-300 dark:text-slate-600 font-normal">(optional)</span>
+                        <span className="text-slate-300 dark:text-slate-600 font-normal">
+                          (optional)
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={Navigation}>
@@ -503,7 +589,9 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                     <FormItem>
                       <FormLabel className={labelClass}>
                         Longitude{" "}
-                        <span className="text-slate-300 dark:text-slate-600 font-normal">(optional)</span>
+                        <span className="text-slate-300 dark:text-slate-600 font-normal">
+                          (optional)
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <FieldWithIcon icon={Navigation}>
@@ -525,7 +613,6 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
                   )}
                 />
               </div>
-
             </form>
           </Form>
         </div>
@@ -551,7 +638,7 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
               "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white",
               "shadow-sm hover:shadow-md hover:shadow-emerald-500/20",
               "hover:-translate-y-px active:translate-y-0 transition-all duration-150",
-              "disabled:opacity-55 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none"
+              "disabled:opacity-55 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none",
             )}
           >
             {mutation.isPending ? (
@@ -567,7 +654,6 @@ export function AddSaharaModal({ open, onOpenChange }: AddSaharaModalProps) {
             )}
           </button>
         </div>
-
       </DialogContent>
     </Dialog>
   );
