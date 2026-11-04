@@ -267,7 +267,7 @@ export function AssignmentList() {
                     {/* Period */}
                     <div className="flex items-center gap-3 min-w-0">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
-                        {format(a.schedule.startDate, 'd MMM yyyy')}{a.schedule.endDate ? ` - ${format(a.schedule.endDate, "d MMM yyyy")}` : "-"}
+                        {a.schedule.startDate? format(a.schedule.startDate, 'd MMM yyyy'):"-"}{a.schedule.endDate ? ` - ${format(a.schedule.endDate, "d MMM yyyy")}` : "-"}
                       </p>
                     </div>
 
