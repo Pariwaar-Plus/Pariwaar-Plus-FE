@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { DM_Sans, Geist, Playfair_Display } from "next/font/google";
+import { DM_Sans, Geist, Playfair_Display, Inter } from "next/font/google";
 
 // ─────────────────────────────────────────────────────
 // Fonts
@@ -15,7 +15,6 @@ const geist = Geist({
   variable: "--font-sans",
 });
 
-
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm-sans",
@@ -24,6 +23,11 @@ const dmSans = DM_Sans({
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 // ─────────────────────────────────────────────────────
@@ -44,24 +48,26 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-    return (
-      <html
-        lang="en"
-        suppressHydrationWarning
-        className={cn("font-sans", geist.variable)}
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("font-sans", geist.variable)}
+    >
+      <body
+        className={`${dmSans.variable} ${playfair.variable} ${geist.variable} ${inter.variable}`}
       >
-        <body className={`${dmSans.variable} ${playfair.variable} ${geist.variable} `}>
-          <QueryProvider>
-            <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                enableSystem ={false}
-            >
-              {children}
-              <Toaster position="top-right" richColors />
-            </ThemeProvider>
-          </QueryProvider>
-        </body>
-      </html>
-    );
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem={false}
+          >
+            {children}
+            <Toaster position="top-right" richColors />
+          </ThemeProvider>
+        </QueryProvider>
+      </body>
+    </html>
+  );
 }
