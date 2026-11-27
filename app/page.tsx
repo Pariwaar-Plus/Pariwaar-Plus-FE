@@ -1,14 +1,199 @@
 // app/page.tsx
 "use client";
 
+import { useEffect, useState } from "react";
 import { ContainerWrapper } from "@/components/shared/container-wrapper/ContainerWrapper";
-import { Avatar, AvatarFallback, AvatarGroup } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import { type CarouselApi } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, Bookmark, Menu } from "lucide-react";
+import { ArrowRight, Bookmark, Menu, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+const HowItWorksList = [
+  {
+    id: 1,
+    title: "Tell us about your family",
+    description:
+      "Share your parents' location, health conditions, and daily needs.",
+  },
+  {
+    id: 2,
+    title: "We find the right companion",
+    description:
+      "A trained, background-verified Nepali-speaking companion near your parents' home.",
+  },
+  {
+    id: 3,
+    title: "Stay close, wherever you are",
+    description:
+      "Get daily updates, vital readings, and instant alerts directly on your phone — wherever you are in the world.",
+  },
+  {
+    id: 4,
+    title: "We'll take care of the rest",
+    description:
+      "From appointments, pharmacy runs, emergency response — our local team is always one call away.",
+  },
+];
+
+const WhatIsIncludedList = [
+  {
+    id: 1,
+    title: "Home Companion Visits",
+    description: "Trained local companions visit daily or weekly",
+  },
+  {
+    id: 2,
+    title: "Real-Time App Updates",
+    description:
+      "Vitals, mood, meals, and activity — all reported live to your dashboard.",
+  },
+  {
+    id: 3,
+    title: "Emergency Response",
+    description:
+      "24/7 local response team dispatched within minutes of any alert.",
+  },
+  {
+    id: 4,
+    title: "Nepali-First Communication",
+    description:
+      "All companions speak Nepali. App available in Nepali and English.",
+  },
+];
+
+const Avatars = [
+  {
+    id: 1,
+    name: "CN",
+    color: "bg-green-700",
+  },
+  {
+    id: 2,
+    name: "LR",
+    color: "bg-orange-700",
+  },
+  {
+    id: 3,
+    name: "ER",
+    color: "bg-red-700",
+  },
+  {
+    id: 4,
+    name: "ER",
+    color: "bg-blue-700",
+  },
+];
+
+const Features = [
+  {
+    id: 1,
+    img: "/f1.png",
+    title: "Health Monitoring",
+    description:
+      "Track blood pressure, heart rate, oxygen, and temperature daily.",
+  },
+  {
+    id: 2,
+    img: "/f2.png",
+    title: "Medication Management",
+    description: "Medication reminders, dose tracking, and easy refills.",
+  },
+  {
+    id: 3,
+    img: "/f3.png",
+    title: "Doctor Coordination",
+    description:
+      "We schedule, accompany, and report back from every hospital visit or check-up.",
+  },
+  {
+    id: 4,
+    img: "/f4.png",
+    title: "Family Video Updates",
+    description:
+      "Regular video call check-ins so you can see and hear your parents are well.",
+  },
+  {
+    id: 5,
+    img: "/f5.png",
+    title: "Secure Health Vault",
+    description:
+      "All records, prescriptions, and test results stored securely and accessible anytime.",
+  },
+  {
+    id: 6,
+    img: "/f6.png",
+    title: "NRN-Friendly Dashboard",
+    description: "Available worldwide in English and Nepali, on any device.",
+  },
+];
+
+const CarouselItems = [
+  {
+    id: 1,
+    img: "/avatar2.jpg",
+    name: "Sajan Thapa",
+    location: "Sydney, Australia",
+    review:
+      "“Living so far away always worried me. Knowing someone is checking on mother gives me a peace of mind I can&apos;t put into words.”",
+  },
+  {
+    id: 2,
+    img: "/avatar1.jpg",
+    name: "Reena Shrestha",
+    location: "London, UK",
+    review:
+      "“My parents love their daily visits. The companion speaks Nepali, understands their needs, and makes them feel at home.”",
+  },
+  {
+    id: 3,
+    img: "/avatar2.jpg",
+    name: "Bikash Gurung",
+    location: "New York, USA",
+    review:
+      "“Managing my father&apos;s care from abroad was difficult. Now, I can follow his health updates and medication without constantly worrying.”",
+  },
+  {
+    id: 4,
+    img: "/avatar2.jpg",
+    name: "Bikash Gurung",
+    location: "New York, USA",
+    review:
+      "“Managing my father&apos;s care from abroad was difficult. Now, I can follow his health updates and medication without constantly worrying.”",
+  },
+];
+
 export default function HomePage() {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+
+    const onSelect = () => {
+      setCurrent(api.selectedScrollSnap());
+    };
+
+    api.on("select", onSelect);
+    onSelect();
+
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
   return (
     <>
       {/* =========== HERO BG IMAGE =========== */}
@@ -19,7 +204,7 @@ export default function HomePage() {
         height={1080}
         className="w-full h-full object-cover absolute top-0 left-0 -z-10"
       />
-      <main className="max-w-[1700px] mx-auto pt-24 pb-6 px-4 md:px-8 lg:px-12">
+      <section className="max-w-[1700px] mx-auto pt-24 pb-6 px-4 md:px-8 lg:px-12">
         {/* =========== NAVBAR =========== */}
         <header className="fixed top-4 left-0 right-0 z-50 mx-auto max-w-[1700px] px-4 md:px-8 lg:px-12 flex items-center gap-2 sm:gap-4">
           <nav className="relative flex-1 bg-[#0C0A09B2]/70 backdrop-blur-xl text-white flex items-center justify-between border border-white/24 rounded-full py-2 xl:py-3 px-6 xl:px-8">
@@ -100,26 +285,13 @@ export default function HomePage() {
           <div className="flex flex-col lg:flex-row justify-center lg:justify-start items-center gap-4">
             {/* avatar group */}
             <AvatarGroup className="*:data-[slot=avatar]:ring-0!">
-              <Avatar className="after:border-black">
-                <AvatarFallback className="bg-green-700 text-white">
-                  CN
-                </AvatarFallback>
-              </Avatar>
-              <Avatar className="after:border-black">
-                <AvatarFallback className="bg-orange-700 text-white">
-                  LR
-                </AvatarFallback>
-              </Avatar>
-              <Avatar className="after:border-black">
-                <AvatarFallback className="bg-red-700 text-white">
-                  ER
-                </AvatarFallback>
-              </Avatar>
-              <Avatar className="after:border-black">
-                <AvatarFallback className="bg-blue-700 text-white">
-                  ER
-                </AvatarFallback>
-              </Avatar>
+              {Avatars.map((avatar) => (
+                <Avatar key={avatar.id} className="after:border-black">
+                  <AvatarFallback className={`${avatar.color} text-white`}>
+                    {avatar.name}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
             </AvatarGroup>
 
             <p className="text-[#E7E5E4E5]/95 font-inter text-center">
@@ -130,7 +302,7 @@ export default function HomePage() {
             </p>
           </div>
         </section>
-      </main>
+      </section>
 
       {/* =========== MARQUEE =========== */}
       <section className="mt-1.5">
@@ -164,7 +336,7 @@ export default function HomePage() {
 
       {/* =========== CALL NOW =========== */}
       <section className="bg-[#2B1A12]">
-        <ContainerWrapper className="py-0! pt-14! flex items-center gap-12 justify-center">
+        <ContainerWrapper className="py-0! pt-14! flex gap-12 justify-center">
           <Image
             src="/phone.png"
             alt="Phone"
@@ -172,16 +344,21 @@ export default function HomePage() {
             height={467}
             unoptimized
           />
-          <div className="max-w-2xl space-y-2 text-white">
-            <h2 className="text-6xl font-playfair font-bold">
+          <div className="max-w-2xl text-white">
+            <h2 className="text-6xl font-playfair font-bold text-[#FDE7D3]">
               Give us a call, and we will handle everything.
             </h2>
-            <p>
-              <span className="h-2 w-2 rounded-full bg-[#FCEDDC]"></span>OUR
-              CARE LINE IS OPEN 24/7
-            </p>
-            <h1 className="text-7xl font-playfair font-bold">98XXXXXXXX</h1>
-            <p className="">
+
+            <div className="flex items-center gap-2 mt-4">
+              <div className="h-2 w-2 rounded-full bg-[#A45106]"></div>
+              <p className="text-[#A45106]">OUR CARE LINE IS OPEN 24/7</p>
+            </div>
+
+            <h1 className="text-7xl font-playfair font-bold text-[#FDE7D3]">
+              98XXXXXXXX
+            </h1>
+
+            <p className="my-4">
               One number for doctors, medicines, emergencies and daily visits —
               guaranteeing the health and longevity of your family.
             </p>
@@ -200,7 +377,7 @@ export default function HomePage() {
       </section>
 
       {/* =========== HOW IT WORKS =========== */}
-      <section className="bg-[#FCEDDC]">
+      <section className="bg-[#F8EEDF]">
         <ContainerWrapper className="flex gap-6">
           {/* left side */}
           <div className="w-[50%]">
@@ -245,7 +422,7 @@ export default function HomePage() {
           </div>
           {/* right side */}
           <div className="w-[50%] border border-white/70 rounded-4xl bg-[#FFF8F1]/72 backdrop-blur-xl shadow-[0px_28px_60px_-10px_#3D1A0424] p-8 space-y-6">
-            <h1 className="font-playfair text-center font-bold text-2xl text-[#2B1203]">
+            <h1 className="font-playfair text-center font-bold text-3xl text-[#2B1203]">
               What is included in every plan
             </h1>
 
@@ -267,59 +444,150 @@ export default function HomePage() {
           </div>
         </ContainerWrapper>
       </section>
+
+      {/* =========== FEATURES =========== */}
+      <section className="bg-[#FBF3E8]">
+        <ContainerWrapper>
+          <h4 className="text-sm text-[#D9692B]">FEATURES</h4>
+
+          <h2 className="text-6xl font-playfair font-semibold max-w-4xl mb-3">
+            Everything your parents need,{" "}
+            <span className="text-[#D9692B] italic">coordinated</span> for you
+          </h2>
+          <p className="text-[#6B5548] text-lg max-w-2xl">
+            Pariwaar+ is built around the real challenges NRN families face —
+            language, distance, trust, and urgency.
+          </p>
+
+          <div className="grid grid-cols-3 gap-4 mt-8">
+            {Features.map((feature) => (
+              <div
+                key={feature.id}
+                className="space-y-3 rounded-xl border border-[#F0DFCB] p-6 bg-[#FFFCF7] shadow-[0_10px_28px_0_#8C451A14]"
+              >
+                <Image
+                  src={feature.img}
+                  alt={feature.title}
+                  height={52}
+                  width={52}
+                />
+                <div>
+                  <h3 className="font-semibold">{feature.title}</h3>
+                  <p className="text-sm text-[#6B5548]">
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border border-[#EAE0D5] bg-[#FFF1E9CC]/80 p-6 rounded-lg flex items-center justify-between mt-12">
+            <div className="flex items-center gap-2">
+              <Image src="/fcheck.png" alt="fcheck" width={32} height={32} />
+              <p>
+                Vetted nurses, trusted hospital liaisons, and bilingual care
+                partners on ground across Nepal.
+              </p>
+            </div>
+
+            <Link
+              href={"#"}
+              className="text-[#D97724] flex items-center font-semibold underline"
+            >
+              Schedule a Free Consultation <ArrowRight size={16} />
+            </Link>
+          </div>
+        </ContainerWrapper>
+      </section>
+
+      {/* =========== TESTIMONIALS =========== */}
+      <section className="bg-[#F8EEDF]">
+        <ContainerWrapper className="space-y-10">
+          <div className="text-center space-y-4">
+            <h4 className="flex items-center max-w-72 mx-auto gap-3 text-[#E07A38] text-sm font-medium">
+              <span className="flex-1 h-px bg-[#E07A38]" />
+              FAMILY STORIES
+              <span className="flex-1 h-px bg-[#E07A38]" />
+            </h4>
+            <h2 className="text-6xl font-medium font-playfair text-[#1C3128]">
+              Miles apart. Closer than ever.
+            </h2>
+            <p className="text-[#57534E] text-lg max-w-lg mx-auto">
+              Hear how Pariwaar+ brings comfort, care, and peace of mind to
+              families across the world.
+            </p>
+          </div>
+
+          <Carousel
+            setApi={setApi}
+            opts={{
+              loop: true,
+              align: "start",
+            }}
+            plugins={[
+              Autoplay({
+                delay: 5000,
+                stopOnInteraction: false,
+                stopOnMouseEnter: false,
+              }),
+            ]}
+          >
+            <CarouselContent>
+              {CarouselItems.map((item) => (
+                <CarouselItem key={item.id} className="basis-1/3 p-4">
+                  <div className="bg-white/90 shadow-md shadow-[#B8896614]/8 p-8 rounded-4xl space-y-6">
+                    <div className="flex items-center gap-1 text-[#E07A38]">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <Star key={index} size={18} fill="currentColor" />
+                      ))}
+                    </div>
+
+                    <p>{item.review}</p>
+
+                    <div className="flex items-center gap-4">
+                      <Avatar size="lg">
+                        <AvatarImage src={item.img} alt={item.name} />
+                      </Avatar>
+
+                      <div className="leading-5">
+                        <h2 className="font-semibold">{item.name}</h2>
+                        <p className="text-sm text-[#8C827A]">
+                          {item.location}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {/* Circular navigation dots */}
+            <div className="flex justify-center gap-1 mt-4">
+              {Array.from({
+                length: Math.min(3, Math.ceil(CarouselItems.length / 3)),
+              }).map((_, index) => {
+                const isActive = Math.floor(current / 3) === index;
+
+                return (
+                  <div
+                    key={index}
+                    className={`rounded-full w-5 h-5 flex items-center justify-center ${
+                      isActive ? "border border-[#F6D3B6] bg-white" : ""
+                    }`}
+                  >
+                    <button
+                      onClick={() => api?.scrollTo(index * 3)}
+                      className={`w-3 h-3 rounded-full transition-all ${
+                        isActive ? "bg-[#E07A38]" : "bg-[#E7D8CB]"
+                      }`}
+                      aria-label={`Go to page ${index + 1}`}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </Carousel>
+        </ContainerWrapper>
+      </section>
     </>
   );
 }
-
-const HowItWorksList = [
-  {
-    id: 1,
-    title: "Tell us about your family",
-    description:
-      "Share your parents' location, health conditions, and daily needs.",
-  },
-  {
-    id: 2,
-    title: "We find the right companion",
-    description:
-      "A trained, background-verified Nepali-speaking companion near your parents' home.",
-  },
-  {
-    id: 3,
-    title: "Stay close, wherever you are",
-    description:
-      "Get daily updates, vital readings, and instant alerts directly on your phone — wherever you are in the world.",
-  },
-  {
-    id: 4,
-    title: "We'll take care of the rest",
-    description:
-      "From appointments, pharmacy runs, emergency response — our local team is always one call away.",
-  },
-];
-
-const WhatIsIncludedList = [
-  {
-    id: 1,
-    title: "Home Companion Visits",
-    description: "Trained local companions visit daily or weekly",
-  },
-  {
-    id: 2,
-    title: "Real-Time App Updates",
-    description:
-      "Vitals, mood, meals, and activity — all reported live to your dashboard.",
-  },
-  {
-    id: 3,
-    title: "Emergency Response",
-    description:
-      "24/7 local response team dispatched within minutes of any alert.",
-  },
-  {
-    id: 4,
-    title: "Nepali-First Communication",
-    description:
-      "All companions speak Nepali. App available in Nepali and English.",
-  },
-];
