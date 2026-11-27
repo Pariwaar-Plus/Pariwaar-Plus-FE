@@ -100,41 +100,41 @@ const Avatars = [
 const Features = [
   {
     id: 1,
-    img: "/f1.png",
+    img: "/heart.png",
     title: "Health Monitoring",
     description:
       "Track blood pressure, heart rate, oxygen, and temperature daily.",
   },
   {
     id: 2,
-    img: "/f2.png",
+    img: "/pill.png",
     title: "Medication Management",
     description: "Medication reminders, dose tracking, and easy refills.",
   },
   {
     id: 3,
-    img: "/f3.png",
+    img: "/steth.png",
     title: "Doctor Coordination",
     description:
       "We schedule, accompany, and report back from every hospital visit or check-up.",
   },
   {
     id: 4,
-    img: "/f4.png",
+    img: "/video.png",
     title: "Family Video Updates",
     description:
       "Regular video call check-ins so you can see and hear your parents are well.",
   },
   {
     id: 5,
-    img: "/f5.png",
+    img: "/lock.png",
     title: "Secure Health Vault",
     description:
       "All records, prescriptions, and test results stored securely and accessible anytime.",
   },
   {
     id: 6,
-    img: "/f6.png",
+    img: "/globe.png",
     title: "NRN-Friendly Dashboard",
     description: "Available worldwide in English and Nepali, on any device.",
   },
@@ -209,27 +209,56 @@ export default function HomePage() {
         <header className="fixed top-4 left-0 right-0 z-50 mx-auto max-w-[1700px] px-4 md:px-8 lg:px-12 flex items-center gap-2 sm:gap-4">
           <nav className="relative flex-1 bg-[#0C0A09B2]/70 backdrop-blur-xl text-white flex items-center justify-between border border-white/24 rounded-full py-2 xl:py-3 px-6 xl:px-8">
             {/* logo */}
-            <a href="#" className="nav-logo">
-              <div className="logo-icon"></div>
+            <Link href="/" className="flex items-center gap-2">
+              <Image src={"/logo.png"} alt="Logo" width={36} height={36} />
               <span className="text-xl">
                 Pariwaar<span className="text-yellow-500">+</span>
               </span>
-            </a>
+            </Link>
 
             {/* center nav */}
             <div className="hidden lg:flex items-center gap-8">
-              <Link href="#how">How It Works</Link>
-              <Link href="#features">What Families Track</Link>
-              <Separator orientation="vertical" />
-              <Link href="#testimonials">FAQS</Link>
-              <Link href="#support">Support</Link>
-              <Link href="#about">About Us</Link>
-              <Link href="#teams">For Teams</Link>
+              {[
+                { href: "#how", label: "How It Works" },
+                { href: "#features", label: "What Families Track" },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="relative after:absolute after:left-0 after:-bottom-1 after:w-full after:h-px after:bg-[#FBBF24] after:opacity-0 hover:after:opacity-100 after:transition-opacity after:duration-300"
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              <Separator orientation="vertical" className="h-5" />
+
+              {[
+                { href: "#testimonials", label: "FAQS" },
+                { href: "#support", label: "Support" },
+                { href: "#about", label: "About Us" },
+                { href: "#teams", label: "For Teams" },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="relative after:absolute after:left-0 after:-bottom-1 after:w-full after:h-px after:bg-[#FBBF24] after:opacity-0 hover:after:opacity-100 after:transition-opacity after:duration-300"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
 
             {/* right nav */}
             <div className="hidden lg:flex items-center gap-4">
-              <button className="font-semibold cursor-pointer">Login</button>
+              <button className="font-semibold cursor-pointer">
+                <Link
+                  href={"/login"}
+                  className="relative after:absolute after:left-0 after:-bottom-1 after:w-full after:h-px after:bg-[#FBBF24] after:opacity-0 hover:after:opacity-100 after:transition-opacity after:duration-300"
+                >
+                  Login
+                </Link>
+              </button>
               <button className="cursor-pointer bg-orange-600 text-white py-3! px-8! rounded-full font-semibold">
                 Get Started
               </button>
@@ -447,7 +476,7 @@ export default function HomePage() {
 
       {/* =========== FEATURES =========== */}
       <section className="bg-[#FBF3E8]">
-        <ContainerWrapper>
+        <ContainerWrapper className="py-20!">
           <h4 className="text-sm text-[#D9692B]">FEATURES</h4>
 
           <h2 className="text-6xl font-playfair font-semibold max-w-4xl mb-3">
@@ -463,15 +492,18 @@ export default function HomePage() {
             {Features.map((feature) => (
               <div
                 key={feature.id}
-                className="space-y-3 rounded-xl border border-[#F0DFCB] p-6 bg-[#FFFCF7] shadow-[0_10px_28px_0_#8C451A14]"
+                className="space-y-3 rounded-xl border border-[#F0DFCB] hover:border-[#F5AD5C] px-6 py-8 bg-[#FFFCF7] hover:bg-[#FFF6E5] shadow-[0_10px_28px_0_#8C451A14] transition-all duration-500 group"
               >
-                <Image
-                  src={feature.img}
-                  alt={feature.title}
-                  height={52}
-                  width={52}
-                />
-                <div>
+                <div className="w-fit p-3 mb-6 rounded-2xl bg-[#FDE7D3] group-hover:bg-[#FACC94] border border-[#F6D3B6] group-hover:border-[#F5AD5C] transition-all duration-500 group-hover:-translate-y-1">
+                  <Image
+                    src={feature.img}
+                    alt={feature.title}
+                    height={24}
+                    width={24}
+                  />
+                </div>
+
+                <div className="transition-transform duration-500 group-hover:-translate-y-1">
                   <h3 className="font-semibold">{feature.title}</h3>
                   <p className="text-sm text-[#6B5548]">
                     {feature.description}
@@ -502,7 +534,7 @@ export default function HomePage() {
 
       {/* =========== TESTIMONIALS =========== */}
       <section className="bg-[#F8EEDF]">
-        <ContainerWrapper className="space-y-10">
+        <ContainerWrapper className="space-y-10 py-20!">
           <div className="text-center space-y-4">
             <h4 className="flex items-center max-w-72 mx-auto gap-3 text-[#E07A38] text-sm font-medium">
               <span className="flex-1 h-px bg-[#E07A38]" />
@@ -535,14 +567,16 @@ export default function HomePage() {
             <CarouselContent>
               {CarouselItems.map((item) => (
                 <CarouselItem key={item.id} className="basis-1/3 p-4">
-                  <div className="bg-white/90 shadow-md shadow-[#B8896614]/8 p-8 rounded-4xl space-y-6">
-                    <div className="flex items-center gap-1 text-[#E07A38]">
-                      {Array.from({ length: 5 }).map((_, index) => (
-                        <Star key={index} size={18} fill="currentColor" />
-                      ))}
-                    </div>
+                  <div className="h-full bg-white/90 shadow-md shadow-[#B8896614]/8 p-8 rounded-4xl flex flex-col justify-between gap-6">
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-1 text-[#E07A38]">
+                        {Array.from({ length: 5 }).map((_, index) => (
+                          <Star key={index} size={18} fill="currentColor" />
+                        ))}
+                      </div>
 
-                    <p>{item.review}</p>
+                      <p>{item.review}</p>
+                    </div>
 
                     <div className="flex items-center gap-4">
                       <Avatar size="lg">
