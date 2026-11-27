@@ -51,23 +51,27 @@ const HowItWorksList = [
 const WhatIsIncludedList = [
   {
     id: 1,
+    img: "/home.png",
     title: "Home Companion Visits",
     description: "Trained local companions visit daily or weekly",
   },
   {
     id: 2,
+    img: "/mobile.png",
     title: "Real-Time App Updates",
     description:
       "Vitals, mood, meals, and activity — all reported live to your dashboard.",
   },
   {
     id: 3,
+    img: "/drive.png",
     title: "Emergency Response",
     description:
       "24/7 local response team dispatched within minutes of any alert.",
   },
   {
     id: 4,
+    img: "/msg.png",
     title: "Nepali-First Communication",
     description:
       "All companions speak Nepali. App available in Nepali and English.",
@@ -449,6 +453,7 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+
           {/* right side */}
           <div className="w-[50%] border border-white/70 rounded-4xl bg-[#FFF8F1]/72 backdrop-blur-xl shadow-[0px_28px_60px_-10px_#3D1A0424] p-8 space-y-6">
             <h1 className="font-playfair text-center font-bold text-3xl text-[#2B1203]">
@@ -459,14 +464,26 @@ export default function HomePage() {
               {WhatIsIncludedList.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-[#FFF7EE] shadow shadow-[#3D1A04]/6 border border-[#E07B222E] p-4 rounded-2xl"
+                  className="bg-[#FFF7EE] shadow shadow-[#3D1A04]/6 border border-[#E07B222E] p-4 rounded-2xl flex items-center gap-4"
                 >
-                  <h2 className="text-lg font-semibold text-[#2B1203]">
-                    {item.title}
-                  </h2>
-                  <p className="text-[#3D1A04D9]/85 text-sm">
-                    {item.description}
-                  </p>
+                  <Image
+                    src={item.img}
+                    alt={item.title}
+                    width={52}
+                    height={52}
+                  />
+                  <Separator
+                    orientation="vertical"
+                    className="bg-[#E07B2238]/22"
+                  />
+                  <div>
+                    <h2 className="text-lg font-semibold text-[#2B1203]">
+                      {item.title}
+                    </h2>
+                    <p className="text-[#3D1A04D9]/85 text-sm">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -604,13 +621,13 @@ export default function HomePage() {
                 return (
                   <div
                     key={index}
-                    className={`rounded-full w-5 h-5 flex items-center justify-center ${
+                    className={`cursor-pointer rounded-full w-5 h-5 flex items-center justify-center ${
                       isActive ? "border border-[#F6D3B6] bg-white" : ""
                     }`}
                   >
                     <button
                       onClick={() => api?.scrollTo(index * 3)}
-                      className={`w-3 h-3 rounded-full transition-all ${
+                      className={`cursor-pointer w-3 h-3 rounded-full transition-all ${
                         isActive ? "bg-[#E07A38]" : "bg-[#E7D8CB]"
                       }`}
                       aria-label={`Go to page ${index + 1}`}
